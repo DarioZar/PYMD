@@ -1,23 +1,24 @@
-#setuptools:  extra_compile_args=-O3
 cimport cython
 import numpy as np
 cimport numpy as np
 
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def force(double[:,:] r, int N, double L, double rc2, double ecor, double ecut):
+def force(double[:,:] r, double L, double rc, double ecor, double ecut):
     """
     N^2 algorithm for computing forces, potential energy and virial.
 
     :param double[N,3] r: array of vector positions
     :param double L: dimension of box
-    :param double rc2: cutoff distance squared
+    :param double rc: cutoff distance
     :param double ecor: energy correction
     :param double ecut: energy after cutoff
     """
     cdef:
         size_t i,j
         int N = r.shape[0]
+        double rc2 = rc*rc
         double r3,r6i,modf,dx,dy,dz,r2
         double e=0,vir=0
         np.ndarray[double,ndim=2] f = np.zeros((N,3), dtype=np.float64)
