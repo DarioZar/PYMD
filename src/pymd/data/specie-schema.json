@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "items": {
+        "title": "Specie",
+        "description": "Chemical specie, with sigma, epsilon interaction parameters for Lennard-Jones potential",
+        "type": "object",
+        "properties": {
+            "name": {
+                "description": "Name of the specie",
+                "type": "string"
+            },
+            "mass": {
+                "description": "Mass in atomic units",
+                "type": "number",
+                "unit": "u"
+            },
+            "sigma": {
+                "description": "Sigma LJ parameter",
+                "type": "number",
+                "unit": "nm"
+            },
+            "eps": {
+                "description": "epsilon LJ parameter in unità di Boltzmann",
+                "type": "number",
+                "unit": "K_B"
+            }
+        },
+        "required": [
+            "name",
+            "mass",
+            "sigma",
+            "eps"
+        ]
+    }
+}

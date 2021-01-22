@@ -26,7 +26,7 @@ def xyz_in(file: TextIO) -> (np.ndarray, np.ndarray):
 
 
 def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
-            L: double, z: int = 16, put_vel: bool = True, unfold: bool = False):
+            L: float, elem: str ='Ar', put_vel: bool = True, unfold: bool = False):
     """
     Outputs array of position and velocity vectors to file in .xyz format
 
@@ -44,13 +44,13 @@ def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
     N = r.shape[0]
     # Unfold positions
     data = r+i*L if unfold else r
-    # Generate atomic number columns
-    data = np.hstack([z*np.ones(N).reshape(N, 1), data])
     # Put velocities
     data = np.hstack([data, v]) if put_vel else data
     # Save the file using numpy fast function
-    np.savetxt(datafile, data, fmt="%.8f",
-               header="{} {}\n".format(N, int(put_vel)), comments="")
+    formatstr = elem + data.shape[1]*" %.8f"
+    np.savetxt(datafile, data, fmt=formatstr,
+               header="{} {}\n".format(N, int(put_vel)), comments="", footer="\n")
+
 
 def gen_cubic_grid(N: int) -> np.ndarray:
     """
