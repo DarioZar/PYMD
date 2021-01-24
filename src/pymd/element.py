@@ -24,11 +24,12 @@ class Element:
         }
 
     def __str__(self):
-        return f"{self.name}, mass={self.mass:.3e} Kg, sigma={self.sigma:.3e} m, epsilon={self.eps:.3e} J"
+        return f"{self.name}, mass={self.mass:.3e} Kg, \
+            sigma={self.sigma:.3e} m, epsilon={self.eps:.3e} J"
 
 
 def gen_element(name: str) -> Element:
-    if not name in available_elements():
+    if name not in available_elements():
         raise Exception("Element not defined in species.json")
     path = os.path.dirname(os.path.realpath(__file__))
     filename = os.path.join(path, 'data', 'species.json')
@@ -37,6 +38,7 @@ def gen_element(name: str) -> Element:
         elem = species['name' == name]
     elem = Element(name, elem['mass'], elem['sigma'], elem['eps'])
     return elem
+
 
 def available_elements() -> list[str]:
     path = os.path.dirname(os.path.realpath(__file__))

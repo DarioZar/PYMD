@@ -1,5 +1,6 @@
-import numpy as np
 from typing import TextIO
+
+import numpy as np
 
 
 def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
@@ -18,7 +19,8 @@ def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
         r = data[:, :3]
         v = data[:, 3:]
     else:
-        data = np.loadtxt(file, usecols=(1, 2, 3), max_rows=N, dtype=np.float64)
+        data = np.loadtxt(file, usecols=(1, 2, 3), max_rows=N,
+                          dtype=np.float64)
         r = data
         v = np.random.exponential(size=(N, 3), dtype=np.float64)
     # Return positions and velocities
@@ -26,7 +28,8 @@ def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
 
 
 def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
-            L: float, elem: str ='Ar', put_vel: bool = True, unfold: bool = False):
+            L: float, elem: str = 'Ar', put_vel: bool = True,
+            unfold: bool = False):
     """
     Outputs array of position and velocity vectors to file in .xyz format
 
@@ -37,8 +40,8 @@ def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
     :param double L: box dimension
     :param double z: atomic number of specie
     :param bool put_vel: choice if put velocities in .xyz file
-    :param bool unfold: choice to unfold the coordinates, the unfolded coordinate is
-                        r[i]+i[i]*L
+    :param bool unfold: choice to unfold the coordinates, the unfolded
+                        coordinate is r[i]+i[i]*L
     """
     # Get N of particles
     N = r.shape[0]
@@ -48,8 +51,8 @@ def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
     data = np.hstack([data, v]) if put_vel else data
     # Save the file using numpy fast function
     formatstr = elem + data.shape[1]*" %.8f"
-    np.savetxt(datafile, data, fmt=formatstr,
-               header="{} {}\n".format(N, int(put_vel)), comments="", footer="\n")
+    np.savetxt(datafile, data, fmt=formatstr, header="{} {}\n".format(
+               N, int(put_vel)), comments="", footer="\n")
 
 
 def gen_cubic_grid(N: int) -> np.ndarray:

@@ -1,8 +1,9 @@
-import numpy as np
-import json
+# import json
 from typing import Union
+
+import numpy as np
+
 from pymd.atoms import Atoms
-from pymd.util import xyz_in, gen_cubic_grid
 from pymd.force_LJ import force
 
 
@@ -16,8 +17,8 @@ class NVEState:
         # Calc forces, potential energy, virial term
         # using the chosen potential
         self.corr = {'ecut': 0, 'ecorr': 0, 'pcorr': 0}
-        self.corr['ecut'], self.corr['ecorr'], self.corr['pcorr'] = self.corrections(
-            self.rc, self.atoms.rho, use_e_corr)
+        self.corr['ecut'], self.corr['ecorr'], self.corr['pcorr'] = \
+            self.corrections(self.rc, self.atoms.rho, use_e_corr)
         self.f, self.PE, vir = self.calc_force_PE()
         if T0 > 0:
             self.KE = 0.5*np.sum(self.atoms.v*self.atoms.v)
@@ -44,7 +45,8 @@ class NVEState:
         self.calc_vars(vir)
 
     def simulate(self, s: int, dt: Union[np.ndarray, float], fSamp: int,
-                 unfold: bool = False, append: bool=True, filename: str="") -> np.ndarray:
+                 unfold: bool = False, append: bool = True,
+                 filename: str = "") -> np.ndarray:
         dt = np.array(dt)
         if dt.shape != s:
             dt = np.ones(s)*dt.item(0)
@@ -54,14 +56,15 @@ class NVEState:
         for i in range(1, s):
             self.step(dt[i])
             output[i] = self.vars_output()
-            if i%fSamp==0:
+            if i % fSamp == 0:
                 if append:
                     self.atoms.write_xyz(filename+"_0.xyz", append=True)
                 else:
                     self.atoms.write_xyz(filename+f"_{i}.xyz")
         return output
 
-    def corrections(self, rc: float, rho: float, use_e_corr: bool) -> (float, float, float):
+    def corrections(self, rc: float, rho: float,
+                    use_e_corr: bool) -> (float, float, float):
         # Compute the tail-corrections; assumes sigma and epsilon are both 1
         rr3 = 1/rc**3
         ecor = 8*np.pi*rho*((rr3**3)/9 - rr3/3) if use_e_corr else 0
@@ -74,7 +77,8 @@ class NVEState:
                      self.corr['ecorr'], self.corr['ecut'])
 
     def vars_output(self):
-        return np.array([self.time, self.KE, self.PE, self.TE, self.drift, self.T, self.P])
+        return np.array([self.time, self.KE, self.PE, self.TE,
+                         self.drift, self.T, self.P])
 
     def calc_vars(self, vir: float):
         self.KE = 0.5*np.sum(self.atoms.v*self.atoms.v)
@@ -111,15 +115,17 @@ class NVTAndersenState(NVEState):
 
         # Andersen Thermostat
         chance = np.random.uniform(size=self.atoms.N) < self.nu*dt
-        self.atoms.v[chance] = np.random.normal(scale=np.sqrt(self.Tbath),
-                                                size=(np.count_nonzero(chance), 3))
+        self.atoms.v[chance] = np.random.normal(
+            scale=np.sqrt(self.Tbath), size=(np.count_nonzero(chance), 3))
 
         # Second integration half-step
         self.atoms.v += 0.5*dt*self.f
         self.calc_vars(vir)
 
+
 def state_from_JSON(file):
     pass
+
 
 def available_statistics():
     stats = ["NVE", "NVT (Andersen)"]

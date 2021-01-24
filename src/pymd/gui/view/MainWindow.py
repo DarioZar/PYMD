@@ -1,10 +1,10 @@
-from PyQt5.QtGui import QIntValidator, QDoubleValidator
-from PyQt5 import QtWidgets
-from pymd.gui.ui.Ui_MainWindow import Ui_MainWindow
-from pymd.gui.model.model import Model
-from pymd.gui.view.ProgressDialog import ProgressDialog
-import sys
 import time
+
+from pymd.gui.model.model import Model
+from pymd.gui.ui.Ui_MainWindow import Ui_MainWindow
+from pymd.gui.view.ProgressDialog import ProgressDialog
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QDoubleValidator, QIntValidator
 
 
 class MainWindow(Ui_MainWindow):
@@ -54,7 +54,8 @@ class MainWindow(Ui_MainWindow):
         self.dialog = QProgressDialog = QtWidgets.QDialog()
         self.progressdialog = ProgressDialog()
         self.progressdialog.setupUi(QProgressDialog)
-        self.progressdialog.runSimulation(self.model.state, self.model.values, self.model.result)
+        self.progressdialog.runSimulation(
+            self.model.state, self.model.values, self.model.result)
         self.dialog.show()
 
     def getModeValues(self):
@@ -111,7 +112,7 @@ class MainWindow(Ui_MainWindow):
         self.browseFile.setVisible(useFile)
         self.element.setEnabled(not useFile)
         self.number.setEnabled(not useFile)
-        #self.rho.setEnabled(not useFile)
+        # self.rho.setEnabled(not useFile)
         self.model.filename = None
         self.fileName.setText(".xyz file")
 
@@ -136,7 +137,7 @@ class MainWindow(Ui_MainWindow):
         mode = self.statistics.currentIndex()
         if mode == 1:
             numfields += [self.tBath, self.nu]
-        numericfilled = all(not n.text()=="" for n in numfields)
+        numericfilled = all(not n.text() == "" for n in numfields)
         outputfilled = not (self.output == "")
         canStart = (numericfilled and outputfilled)
         return canStart
