@@ -7,6 +7,7 @@ from numpy import get_include
 options = toml.load("pyproject.toml")["build-system"]
 PARALLEL   = options["parallel"]
 PUREPYTHON = options["purepython"]
+GUI        = options["gui"]
 
 extensions = []
 
@@ -23,6 +24,11 @@ if not PUREPYTHON:
         extra_link_args=linkargs)
     ]
 
+install_requires = ["numpy", "matplotlib"]
+if GUI:
+    install_requires+=["pyqt5"]
+
 # Build extensions
 if __name__ == "__main__":
-    setup(ext_modules=cythonize(extensions, nthreads=4))
+    setup(install_requires=install_requires,
+          ext_modules=cythonize(extensions, nthreads=4))
