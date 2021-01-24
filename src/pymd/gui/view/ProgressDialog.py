@@ -5,16 +5,17 @@ from pymd.gui.ui.Ui_ProgressDialog import Ui_ProgressDialog
 from pymd.gui.worker.SimulatorWorker import SimulatorWorker
 from pymd.state import NVEState, NVTAndersenState
 from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMainWindow
 
 
 class ProgressDialog(Ui_ProgressDialog):
     def __init__(self):
         super().__init__()
 
-    def setupUi(self, ProgressDialog: QDialog):
+    def setupUi(self, Dialog: QDialog):
         # Initialize view
-        super().setupUi(ProgressDialog)
+        super().setupUi(Dialog)
+        Dialog.rejected.connect(self.closeEvent)
         self.plotgr.clicked.connect(self.plotgrSlot)
 
     def runSimulation(self, state: Union[NVEState, NVTAndersenState],
@@ -25,6 +26,8 @@ class ProgressDialog(Ui_ProgressDialog):
         self.worker = SimulatorWorker(state, values, result)
         # Move worker to the thread
         self.worker.moveToThread(self.thread)
+        # Clean textbox
+        self.text.clear()
         # Connect signals and slots
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
@@ -51,4 +54,8 @@ class ProgressDialog(Ui_ProgressDialog):
         self.plotgr.setEnabled(True)
 
     def plotgrSlot(self):
+        # window = 
         pass
+
+    def closeEvent(self):
+        self.worker.flag = True

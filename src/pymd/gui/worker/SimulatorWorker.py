@@ -18,6 +18,7 @@ class SimulatorWorker(QObject):
         super().__init__()
         self.state = state
         self.values = values
+        self.flag = False
 
     def run(self):
         a = time.time()
@@ -33,6 +34,8 @@ class SimulatorWorker(QObject):
         output[0] = self.state.vars_output()
         self.currentoutput.emit(self.tostring(output[0]))
         for i in range(1, steps):
+            if self.flag:
+                break
             self.state.step(dt)
             output[i] = self.state.vars_output()
             if i % fSamp == 0:

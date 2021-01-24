@@ -11,12 +11,15 @@ class MainWindow(Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.model = Model()
+        self.dialog = QtWidgets.QDialog()
+        self.progressdialog = ProgressDialog()
+        self.progressdialog.setupUi(self.dialog)
 
     def setupUi(self, MainWindow):
         # Initialize view
         super().setupUi(MainWindow)
         # Set items of Combo, default values and visibility
-        self.element.addItems(self.model.available_molecules())
+        self.element.addItems(self.model.available_elements())
         self.statistics.addItems(self.model.available_statistics())
         self.fileName.setVisible(self.fromFileCheck.isChecked())
         self.browseFile.setVisible(self.fromFileCheck.isChecked())
@@ -51,9 +54,6 @@ class MainWindow(Ui_MainWindow):
             error_dialog.exec_()
 
     def runSimulation(self):
-        self.dialog = QProgressDialog = QtWidgets.QDialog()
-        self.progressdialog = ProgressDialog()
-        self.progressdialog.setupUi(QProgressDialog)
         self.progressdialog.runSimulation(
             self.model.state, self.model.values, self.model.result)
         self.dialog.show()
