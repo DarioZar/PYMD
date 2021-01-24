@@ -47,7 +47,7 @@ class ProgressDialog(Ui_ProgressDialog):
         self.text.append(value)
 
     def reportFinishTime(self, value):
-        self.text.append(f"Finito in {value:.3e} s")
+        self.text.append(f"Finito in {value:0.3g} s")
         self.progressBar.setValue(100)
 
     def enablePlotting(self):

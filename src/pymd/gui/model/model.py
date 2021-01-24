@@ -54,6 +54,8 @@ class Model:
             self.state = NVEState(self.atoms, self.values['t0'],
                                   self.values['rc'], self.values['use_ecorr'])
         elif self.mode == 1:
-            self.state = NVTAndersenState(self.atoms, self.values['t0'],
-                                          self.values['rc'],
-                                          self.values['use_ecorr'])
+            self.state = NVTAndersenState(self.atoms, T0=self.values['t0'],
+                                          rc=self.values['rc'],
+                                          use_e_corr=self.values['use_ecorr'],
+                                          Tbath=self.values['Tbath'],
+                                          nu=self.values['nu'])

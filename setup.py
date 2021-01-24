@@ -14,7 +14,7 @@ extensions = []
 if not PUREPYTHON:
     cythonfile  = "src/cython/force_LJ"
     cythonfile += "_par.pyx" if PARALLEL else ".pyx"
-    compileargs = ["-03", "-ffast-math", "-march=native"]
+    compileargs = ["-O3", "-ffast-math", "-march=native"]
     compileargs+= ["-fopenmp"] if PARALLEL else []
     linkargs    = ["-fopenmp"] if PARALLEL else []
     extensions += [

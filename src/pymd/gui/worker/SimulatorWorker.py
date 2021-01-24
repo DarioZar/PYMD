@@ -30,7 +30,7 @@ class SimulatorWorker(QObject):
         filename = self.values['outputfile']
         self.state.atoms.write_xyz(filename+"_0.xyz", unfold=unfold)
         output = np.empty((steps, len(self.state.vars_output())))
-        self.currentoutput.emit("Time\t\tKE\t\tPE\t\tTE\t\tdrift\t\tT\t\tP")
+        self.currentoutput.emit("Time\tKE\tPE\tTE\tdrift\tT\tP")
         output[0] = self.state.vars_output()
         self.currentoutput.emit(self.tostring(output[0]))
         for i in range(1, steps):
@@ -53,5 +53,5 @@ class SimulatorWorker(QObject):
     def tostring(self, output):
         outstring = ""
         for n in output:
-            outstring += "{:.3e}\t".format(n)
+            outstring += "{:0.3g}\t".format(n)
         return outstring
