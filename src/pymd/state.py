@@ -44,23 +44,21 @@ class NVEState:
         self.calc_vars(vir)
 
     def simulate(self, s: int, dt: Union[np.ndarray, float], fSamp: int,
-                 unfold: bool = False, append=True) -> np.ndarray:
+                 unfold: bool = False, append: bool=True, filename: str="") -> np.ndarray:
         dt = np.array(dt)
         if dt.shape != s:
             dt = np.ones(s)*dt.item(0)
         output = np.empty((s, len(self.vars_output())))
         output[0] = self.vars_output()
-        self.atoms.write_xyz("0.xyz")
+        self.atoms.write_xyz(filename+"_0.xyz")
         for i in range(1, s):
             self.step(dt[i])
             output[i] = self.vars_output()
-            # debug
-
-            '''if s % fSamp:
+            if i%fSamp==0:
                 if append:
-                    self.atoms.write_xyz("0.xyz", append=True)
+                    self.atoms.write_xyz(filename+"_0.xyz", append=True)
                 else:
-                    self.atoms.write_xyz(f"{s}.xyz")'''
+                    self.atoms.write_xyz(filename+f"_{i}.xyz")
         return output
 
     def corrections(self, rc: float, rho: float, use_e_corr: bool) -> (float, float, float):
@@ -122,3 +120,7 @@ class NVTAndersenState(NVEState):
 
 def state_from_JSON(file):
     pass
+
+def available_statistics():
+    stats = ["NVE", "NVT (Andersen)"]
+    return stats

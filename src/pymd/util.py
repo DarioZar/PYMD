@@ -2,27 +2,27 @@ import numpy as np
 from typing import TextIO
 
 
-def xyz_in(file: TextIO) -> (np.ndarray, np.ndarray):
+def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
     """
     Read and parse .xyz file to array of position and velocity vectors.
 
     :param TextIO file: file stream
-    :return (np.ndarray, np.ndarray): r, v arrays
+    :return (int, np.ndarray, np.ndarray): N of atoms, r, v arrays
     """
     # Read first row for N and has_vel
     N, has_vel = [int(i) for i in next(file).split()]
     # If has velocities, read, else generate random
     if(has_vel):
-        data = np.loadtxt(f, usecols=(1, 2, 3, 4, 5, 6),
+        data = np.loadtxt(file, usecols=(1, 2, 3, 4, 5, 6),
                           max_rows=N, dtype=np.float64)
         r = data[:, :3]
         v = data[:, 3:]
     else:
-        data = np.loadtxt(f, usecols=(1, 2, 3), max_rows=N, dtype=np.float64)
+        data = np.loadtxt(file, usecols=(1, 2, 3), max_rows=N, dtype=np.float64)
         r = data
         v = np.random.exponential(size=(N, 3), dtype=np.float64)
     # Return positions and velocities
-    return r, v
+    return N, r, v
 
 
 def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
