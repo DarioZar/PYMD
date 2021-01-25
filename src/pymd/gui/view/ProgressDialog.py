@@ -1,44 +1,38 @@
 from typing import Union
 
 import numpy as np
-from pymd.gui.ui.Ui_ProgressDialog import Ui_ProgressDialog
-from pymd.gui.worker.SimulatorWorker import SimulatorWorker
+from pymd.gui.view.Ui_ProgressDialog import Ui_ProgressDialog
+from pymd.gui.model.SimulatorWorker import SimulatorWorker
+from pymd.gui import resources
 from pymd.state import NVEState, NVTAndersenState
-from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QDialog, QMainWindow
+from PyQt5.QtMultimedia import QSound
 
 
 class ProgressDialog(Ui_ProgressDialog):
+
+    @property
+    def worker(self):
+        return self.myworker
+    @worker.setter
+    def worker(self, value):
+        self.myworker = value
+        self.myworker.progress.connect(self.reportProgressSlot)
+        self.myworker.currentoutput.connect(self.reportProgressString)
+        self.myworker.timeElapsed.connect(self.reportFinishTime)
+        self.myworker.finished.connect(self.enablePlotting)
+        self.myworker.finished.connect(self.playFinishSound)
+    
     def __init__(self):
         super().__init__()
+        self.finishsound = QSound(":/sound/joy")
 
     def setupUi(self, Dialog: QDialog):
         # Initialize view
         super().setupUi(Dialog)
+        self.text.clear()
         Dialog.rejected.connect(self.closeEvent)
         self.plotgr.clicked.connect(self.plotgrSlot)
-
-    def runSimulation(self, state: Union[NVEState, NVTAndersenState],
-                      values: dict, result: np.ndarray):
-        # Create a QThread object
-        self.thread = QThread()
-        # Create a worker object
-        self.worker = SimulatorWorker(state, values, result)
-        # Move worker to the thread
-        self.worker.moveToThread(self.thread)
-        # Clean textbox
-        self.text.clear()
-        # Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.progress.connect(self.reportProgressSlot)
-        self.worker.currentoutput.connect(self.reportProgressString)
-        self.worker.timeElapsed.connect(self.reportFinishTime)
-        self.thread.finished.connect(self.enablePlotting)
-        # Start the thread
-        self.thread.start()
 
     def reportProgressSlot(self, value):
         self.progressBar.setValue(100*value)
@@ -47,15 +41,18 @@ class ProgressDialog(Ui_ProgressDialog):
         self.text.append(value)
 
     def reportFinishTime(self, value):
-        self.text.append(f"Finito in {value:0.3g} s")
+        self.text.append(f"Elapsed time: {value:0.3g} s")
         self.progressBar.setValue(100)
 
     def enablePlotting(self):
         self.plotgr.setEnabled(True)
+    
+    def playFinishSound(self):
+        self.finishsound.play()
 
     def plotgrSlot(self):
         # window = 
         pass
 
     def closeEvent(self):
-        self.worker.flag = True
+        self.myworker.flag = True

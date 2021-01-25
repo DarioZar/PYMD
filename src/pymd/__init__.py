@@ -1,1 +1,1 @@
-from pymd.gui.gui import main as gui
+from pymd.gui.App import main as gui

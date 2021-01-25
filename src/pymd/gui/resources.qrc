@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="sound">
+    <file alias="error">./sound/error.wav</file>
+    <file alias="joy">./sound/joy.wav</file>
+</qresource>
+</RCC>
