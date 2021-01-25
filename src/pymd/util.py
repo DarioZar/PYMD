@@ -52,7 +52,7 @@ def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
     # Save the file using numpy fast function
     formatstr = elem + data.shape[1]*" %.8f"
     np.savetxt(datafile, data, fmt=formatstr, header="{} {}\n".format(
-               N, int(put_vel)), comments="", footer="\n")
+               N, int(put_vel)), comments="")
 
 
 def gen_cubic_grid(N: int) -> np.ndarray:
@@ -65,7 +65,7 @@ def gen_cubic_grid(N: int) -> np.ndarray:
     """
     # Find the lowest perfect cube, n3, greater than or equal to the
     # number of particles
-    n3 = int(np.ceil(np.cbrt(N)))
+    n3 = int(np.ceil(N**(1/3)))
     # Create the cubic grid
     x, y, z = np.mgrid[0:n3, 0:n3, 0:n3]
     # Return the grid as n3**3 vectors, center points of grid elements

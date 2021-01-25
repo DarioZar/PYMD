@@ -14,6 +14,8 @@ class NVEState:
         self.time = 0
         self.atoms = atoms
         self.rc = rc
+        if self.rc > self.atoms.L/2:
+            raise ValueError("R_cutoff can't be greater than half box length")
         # Calc forces, potential energy, virial term
         # using the chosen potential
         self.corr = {'ecut': 0, 'ecorr': 0, 'pcorr': 0}
