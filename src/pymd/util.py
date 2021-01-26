@@ -13,23 +13,32 @@ def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
     # Read first row for N and has_vel
     N, has_vel = [int(i) for i in next(file).split()]
     # If has velocities, read, else generate random
-    if(has_vel):
-        data = np.loadtxt(file, usecols=(1, 2, 3, 4, 5, 6),
-                          max_rows=N, dtype=np.float64)
+    if has_vel:
+        data = np.loadtxt(
+            file, usecols=(1, 2, 3, 4, 5, 6), max_rows=N, dtype=np.float64
+        )
         r = data[:, :3]
         v = data[:, 3:]
     else:
-        data = np.loadtxt(file, usecols=(1, 2, 3), max_rows=N,
-                          dtype=np.float64)
+        data = np.loadtxt(
+            file, usecols=(1, 2, 3), max_rows=N, dtype=np.float64
+        )
         r = data
         v = np.random.exponential(size=(N, 3), dtype=np.float64)
     # Return positions and velocities
     return N, r, v
 
 
-def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
-            L: float, elem: str = 'Ar', put_vel: bool = True,
-            unfold: bool = False):
+def xyz_out(
+    datafile: TextIO,
+    r: np.ndarray,
+    v: np.ndarray,
+    i: np.ndarray,
+    L: float,
+    elem: str = "Ar",
+    put_vel: bool = True,
+    unfold: bool = False,
+):
     """
     Outputs array of position and velocity vectors to file in .xyz format
 
@@ -46,13 +55,18 @@ def xyz_out(datafile: TextIO, r: np.ndarray, v: np.ndarray, i: np.ndarray,
     # Get N of particles
     N = r.shape[0]
     # Unfold positions
-    data = r+i*L if unfold else r
+    data = r + i * L if unfold else r
     # Put velocities
     data = np.hstack([data, v]) if put_vel else data
     # Save the file using numpy fast function
-    formatstr = elem + data.shape[1]*" %.8f"
-    np.savetxt(datafile, data, fmt=formatstr, header="{} {}\n".format(
-               N, int(put_vel)), comments="")
+    formatstr = elem + data.shape[1] * " %.8f"
+    np.savetxt(
+        datafile,
+        data,
+        fmt=formatstr,
+        header="{} {}\n".format(N, int(put_vel)),
+        comments="",
+    )
 
 
 def gen_cubic_grid(N: int) -> np.ndarray:
@@ -65,10 +79,10 @@ def gen_cubic_grid(N: int) -> np.ndarray:
     """
     # Find the lowest perfect cube, n3, greater than or equal to the
     # number of particles
-    n3 = int(np.ceil(N**(1/3)))
+    n3 = int(np.ceil(N ** (1 / 3)))
     # Create the cubic grid
     x, y, z = np.mgrid[0:n3, 0:n3, 0:n3]
     # Return the grid as n3**3 vectors, center points of grid elements
     # N.B USO ORDINE INVERSO, PER ORA, PER COMPATIBILITA
-    grid = np.array([z, y, x]).reshape(3, n3**3).T
-    return (grid+0.5)/n3
+    grid = np.array([z, y, x]).reshape(3, n3 ** 3).T
+    return (grid + 0.5) / n3

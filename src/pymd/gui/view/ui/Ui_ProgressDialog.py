@@ -23,7 +23,9 @@ class Ui_ProgressDialog(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 726, 309))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout = QtWidgets.QVBoxLayout(
+            self.scrollAreaWidgetContents
+        )
         self.verticalLayout.setObjectName("verticalLayout")
         self.text = QtWidgets.QTextBrowser(self.scrollAreaWidgetContents)
         self.text.setObjectName("text")
@@ -47,5 +49,7 @@ class Ui_ProgressDialog(object):
 
     def retranslateUi(self, ProgressDialog):
         _translate = QtCore.QCoreApplication.translate
-        ProgressDialog.setWindowTitle(_translate("ProgressDialog", "Simulating..."))
+        ProgressDialog.setWindowTitle(
+            _translate("ProgressDialog", "Simulating...")
+        )
         self.plotgr.setText(_translate("ProgressDialog", "Plot g(r)"))

@@ -1,15 +1,15 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtMultimedia import QSound, QSoundEffect
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIntValidator, QDoubleValidator
-from pymd.gui.view.Ui_MainWindow import Ui_MainWindow
-from pymd.gui.view.ProgressDialog import ProgressDialog
-from pymd.gui import resources
 from typing import Union
+
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QDoubleValidator, QIntValidator
+from PyQt5.QtMultimedia import QSound
+
+from pymd.gui import resources  # noqa: F401
+from pymd.gui.view.ProgressDialog import ProgressDialog
+from pymd.gui.view.ui.Ui_MainWindow import Ui_MainWindow
 
 
 class MainView(QtWidgets.QMainWindow):
-
     def __init__(self, model, main_ctrl):
         self.model = model
         self.main_ctrl = main_ctrl
@@ -28,11 +28,11 @@ class MainView(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        #### set Qt model for compatible widget types ####
+        # set Qt model for compatible widget types
         self.ui.comboBox_element.setModel(self.model.element_model)
         self.ui.comboBox_statistics.setModel(self.model.statistics_model)
 
-        #### connect widget signals to event functions ####
+        # connect widget signals to event functions
         self._connectSignals()
         self._attachValidators()
 
@@ -45,7 +45,8 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.lineEdit_rho.textEdited.connect(self.on_rho)
         self.ui.lineEdit_rho.editingFinished.connect(self.update_L)
         self.ui.comboBox_statistics.currentIndexChanged.connect(
-            self.on_statistics)
+            self.on_statistics
+        )
         self.ui.lineEdit_t0.textEdited.connect(self.on_t0)
         self.ui.lineEdit_rc.textEdited.connect(self.on_rc)
         self.ui.lineEdit_tBath.textEdited.connect(self.on_tBath)
@@ -60,7 +61,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.pushButton_start.clicked.connect(self.on_start)
 
     def _attachValidators(self):
-        ''' Set validator for every numeric field'''
+        """ Set validator for every numeric field"""
         self.ui.lineEdit_number.setValidator(QIntValidator(bottom=0))
         self.ui.lineEdit_rho.setValidator(QDoubleValidator(bottom=0))
         self.ui.lineEdit_L.setValidator(QDoubleValidator(bottom=0))
@@ -73,7 +74,7 @@ class MainView(QtWidgets.QMainWindow):
         self.ui.lineEdit_fSamp.setValidator(QIntValidator(bottom=0))
 
     def update_ui_from_model(self):
-        #### update widget values from model ####
+        # update widget values from model
         self.element = self.model.element
         self.fromFile = self.model.fromFile
         self.fileName = self.model.fileName
@@ -99,27 +100,63 @@ class MainView(QtWidgets.QMainWindow):
             self.dialog.show()
             self.hide()
 
-    #### widget signal event functions ####
-    def on_element(self, index): self.main_ctrl.change_element(index)
-    def on_fromFile(self, state): self.main_ctrl.change_fromFile(state)
+    # widget signal event functions
+    def on_element(self, index):
+        self.main_ctrl.change_element(index)
+
+    def on_fromFile(self, state):
+        self.main_ctrl.change_fromFile(state)
+
     def on_browseFile(self):
         self.main_ctrl.change_browseFile(
-            self.browseFile, self.showFileDialog())
-    def on_number(self, text): self.main_ctrl.change_number(text)
-    def on_rho(self, text): self.main_ctrl.change_rho(text)
-    def update_L(self): self.main_ctrl.update_L()
-    def on_statistics(self, index): self.main_ctrl.change_statistics(index)
-    def on_t0(self, text): self.main_ctrl.change_t0(text)
-    def on_rc(self, text): self.main_ctrl.change_rc(text)
-    def on_tBath(self, text): self.main_ctrl.change_tBath(text)
-    def on_nu(self, text): self.main_ctrl.change_nu(text)
-    def on_eCorr(self, state): self.main_ctrl.change_eCorr(state)
-    def on_steps(self, text): self.main_ctrl.change_steps(text)
-    def on_dt(self, text): self.main_ctrl.change_dt(text)
-    def on_output(self, text): self.main_ctrl.change_output(text)
-    def on_fSamp(self, text): self.main_ctrl.change_fSamp(text)
-    def on_unfold(self, state): self.main_ctrl.change_unfold(state)
-    def on_singleFile(self, state): self.main_ctrl.change_singleFile(state)
+            self.browseFile, self.showFileDialog()
+        )
+
+    def on_number(self, text):
+        self.main_ctrl.change_number(text)
+
+    def on_rho(self, text):
+        self.main_ctrl.change_rho(text)
+
+    def update_L(self):
+        self.main_ctrl.update_L()
+
+    def on_statistics(self, index):
+        self.main_ctrl.change_statistics(index)
+
+    def on_t0(self, text):
+        self.main_ctrl.change_t0(text)
+
+    def on_rc(self, text):
+        self.main_ctrl.change_rc(text)
+
+    def on_tBath(self, text):
+        self.main_ctrl.change_tBath(text)
+
+    def on_nu(self, text):
+        self.main_ctrl.change_nu(text)
+
+    def on_eCorr(self, state):
+        self.main_ctrl.change_eCorr(state)
+
+    def on_steps(self, text):
+        self.main_ctrl.change_steps(text)
+
+    def on_dt(self, text):
+        self.main_ctrl.change_dt(text)
+
+    def on_output(self, text):
+        self.main_ctrl.change_output(text)
+
+    def on_fSamp(self, text):
+        self.main_ctrl.change_fSamp(text)
+
+    def on_unfold(self, state):
+        self.main_ctrl.change_unfold(state)
+
+    def on_singleFile(self, state):
+        self.main_ctrl.change_singleFile(state)
+
     def on_start(self):
         valid, error = self.model.isInputValid()
         if not valid:
@@ -142,10 +179,11 @@ class MainView(QtWidgets.QMainWindow):
             "Scegli file di coordinate *.xyz",
             "",
             "XYZ Files (*.xyz);;All Files (*)",
-            options=options)
+            options=options,
+        )
         return fileName
 
-    #### properties for widget value ####
+    # properties for widget value
     @property
     def element(self) -> str:
         return self.ui.comboBox_element.currentText()
@@ -313,8 +351,7 @@ class MainView(QtWidgets.QMainWindow):
 
 
 def as_str(val: Union[int, float], fmtstr=""):
-    if val != None:
-        string = ("{"+fmtstr+"}").format(val)
+    if val is not None:
+        return ("{" + fmtstr + "}").format(val)
     else:
-        string = ""
-    return string
+        return ""

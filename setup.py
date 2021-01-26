@@ -1,34 +1,39 @@
-from setuptools import Extension, setup
-from Cython.Build import cythonize
 import toml
+from Cython.Build import cythonize
 from numpy import get_include
+from setuptools import Extension, setup
 
 # Choose build option from toml file
 options = toml.load("pyproject.toml")["build-system"]
-PARALLEL   = options["parallel"]
+PARALLEL = options["parallel"]
 PUREPYTHON = options["purepython"]
-GUI        = options["gui"]
+GUI = options["gui"]
 
 extensions = []
 
 if not PUREPYTHON:
-    cythonfile  = "src/cython/force_LJ"
+    cythonfile = "src/cython/force_LJ"
     cythonfile += "_par.pyx" if PARALLEL else ".pyx"
     compileargs = ["-O3", "-ffast-math", "-march=native"]
-    compileargs+= ["-fopenmp"] if PARALLEL else []
-    linkargs    = ["-fopenmp"] if PARALLEL else []
+    compileargs += ["-fopenmp"] if PARALLEL else []
+    linkargs = ["-fopenmp"] if PARALLEL else []
     extensions += [
-        Extension(name="pymd.force_LJ", sources=[cythonfile],
-        include_dirs=[get_include()],
-        extra_compile_args=compileargs,
-        extra_link_args=linkargs)
+        Extension(
+            name="pymd.force_LJ",
+            sources=[cythonfile],
+            include_dirs=[get_include()],
+            extra_compile_args=compileargs,
+            extra_link_args=linkargs,
+        )
     ]
 
 install_requires = ["numpy", "matplotlib"]
 if GUI:
-    install_requires+=["pyqt5"]
+    install_requires += ["pyqt5"]
 
 # Build extensions
 if __name__ == "__main__":
-    setup(install_requires=install_requires,
-          ext_modules=cythonize(extensions, nthreads=4))
+    setup(
+        install_requires=install_requires,
+        ext_modules=cythonize(extensions, nthreads=4),
+    )

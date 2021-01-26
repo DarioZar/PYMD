@@ -1,19 +1,15 @@
-from typing import Union
-
-import numpy as np
-from pymd.gui.view.Ui_ProgressDialog import Ui_ProgressDialog
-from pymd.gui.model.SimulatorWorker import SimulatorWorker
-from pymd.gui import resources
-from pymd.state import NVEState, NVTAndersenState
-from PyQt5.QtWidgets import QDialog, QMainWindow
 from PyQt5.QtMultimedia import QSound
+from PyQt5.QtWidgets import QDialog
+
+from pymd.gui import resources  # noqa: F401
+from pymd.gui.view.ui.Ui_ProgressDialog import Ui_ProgressDialog
 
 
 class ProgressDialog(Ui_ProgressDialog):
-
     @property
     def worker(self):
         return self.myworker
+
     @worker.setter
     def worker(self, value):
         self.myworker = value
@@ -22,7 +18,7 @@ class ProgressDialog(Ui_ProgressDialog):
         self.myworker.timeElapsed.connect(self.reportFinishTime)
         self.myworker.finished.connect(self.enablePlotting)
         self.myworker.finished.connect(self.playFinishSound)
-    
+
     def __init__(self):
         super().__init__()
         self.finishsound = QSound(":/sound/joy")
@@ -35,7 +31,7 @@ class ProgressDialog(Ui_ProgressDialog):
         self.plotgr.clicked.connect(self.plotgrSlot)
 
     def reportProgressSlot(self, value):
-        self.progressBar.setValue(100*value)
+        self.progressBar.setValue(100 * value)
 
     def reportProgressString(self, value):
         self.text.append(value)
@@ -46,12 +42,12 @@ class ProgressDialog(Ui_ProgressDialog):
 
     def enablePlotting(self):
         self.plotgr.setEnabled(True)
-    
+
     def playFinishSound(self):
         self.finishsound.play()
 
     def plotgrSlot(self):
-        # window = 
+        # window =
         pass
 
     def closeEvent(self):

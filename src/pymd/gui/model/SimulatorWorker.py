@@ -2,8 +2,9 @@ import time
 from typing import Union
 
 import numpy as np
-from pymd.state import NVEState, NVTAndersenState
 from PyQt5.QtCore import QObject, pyqtSignal
+
+from pymd.state import NVEState, NVTAndersenState
 
 
 class SimulatorWorker(QObject):
@@ -13,8 +14,7 @@ class SimulatorWorker(QObject):
     currentoutput = pyqtSignal(str)
     timeElapsed = pyqtSignal(float)
 
-    def __init__(self, state: Union[NVEState, NVTAndersenState],
-                 values: dict):
+    def __init__(self, state: Union[NVEState, NVTAndersenState], values: dict):
         super().__init__()
         self.state = state
         self.values = values
@@ -22,13 +22,13 @@ class SimulatorWorker(QObject):
 
     def run(self):
         a = time.time()
-        steps = self.values['steps']
-        dt = self.values['dt']
-        fSamp = self.values['fSamp']
-        append = self.values['append']
-        unfold = self.values['unfold']
-        filename = self.values['outputfile']
-        self.state.atoms.write_xyz(filename+"_0.xyz", unfold=unfold)
+        steps = self.values["steps"]
+        dt = self.values["dt"]
+        fSamp = self.values["fSamp"]
+        append = self.values["append"]
+        unfold = self.values["unfold"]
+        filename = self.values["outputfile"]
+        self.state.atoms.write_xyz(filename + "_0.xyz", unfold=unfold)
         output = np.empty((steps, len(self.state.vars_output())))
         self.currentoutput.emit("Time\tKE\tPE\tTE\tdrift\tT\tP")
         output[0] = self.state.vars_output()
@@ -40,16 +40,19 @@ class SimulatorWorker(QObject):
             output[i] = self.state.vars_output()
             if i % fSamp == 0:
                 self.currentoutput.emit(self.tostring(output[i]))
-                #self.g_r = state.g_r()
+                # self.g_r = state.g_r()
                 if append:
-                    self.state.atoms.write_xyz(filename+"_0.xyz", append=True)
+                    self.state.atoms.write_xyz(
+                        filename + "_0.xyz", append=True
+                    )
                 else:
-                    self.state.atoms.write_xyz(filename+f"_{i}.xyz")
-            self.progress.emit(i/steps)
+                    self.state.atoms.write_xyz(filename + f"_{i}.xyz")
+            self.progress.emit(i / steps)
         self.finished.emit()
         self.timeElapsed.emit(time.time() - a)
-        np.savetxt(filename+".txt",
-                   output, header="Time\tKE\tPE\tTE\tdrift\tT\tP")
+        np.savetxt(
+            filename + ".txt", output, header="Time\tKE\tPE\tTE\tdrift\tT\tP"
+        )
 
     def tostring(self, output):
         outstring = ""

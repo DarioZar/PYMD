@@ -1,9 +1,12 @@
 import sys
-from PyQt5.QtWidgets import QApplication
+
 from PyQt5.QtCore import QLocale
-from pymd.gui.model.Model import Model
+from PyQt5.QtWidgets import QApplication
+
 from pymd.gui.controller.MainController import MainController
+from pymd.gui.model.Model import Model
 from pymd.gui.view.MainView import MainView
+
 
 class App(QApplication):
     def __init__(self, sys_argv):
@@ -13,6 +16,7 @@ class App(QApplication):
         self.main_view = MainView(self.model, self.main_ctrl)
         self.main_view.show()
 
+
 def main():
     locale = QLocale(QLocale.English)
     locale.setNumberOptions(QLocale.RejectGroupSeparator)
@@ -20,5 +24,6 @@ def main():
     app = App(sys.argv)
     sys.exit(app.exec_())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

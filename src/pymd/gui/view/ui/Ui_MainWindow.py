@@ -31,7 +31,12 @@ class Ui_MainWindow(object):
         self.comboBox_element = QtWidgets.QComboBox(self.atomsGroup)
         self.comboBox_element.setObjectName("comboBox_element")
         self.horizontalLayout.addWidget(self.comboBox_element)
-        spacerItem = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            30,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout.addItem(spacerItem)
         self.checkBox_fromFile = QtWidgets.QCheckBox(self.atomsGroup)
         self.checkBox_fromFile.setObjectName("checkBox_fromFile")
@@ -52,7 +57,12 @@ class Ui_MainWindow(object):
         self.lineEdit_number.setFrame(True)
         self.lineEdit_number.setObjectName("lineEdit_number")
         self.horizontalLayout_2.addWidget(self.lineEdit_number)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout_2.addItem(spacerItem1)
         self.rhoLabel = QtWidgets.QLabel(self.atomsGroup)
         self.rhoLabel.setObjectName("rhoLabel")
@@ -60,7 +70,12 @@ class Ui_MainWindow(object):
         self.lineEdit_rho = QtWidgets.QLineEdit(self.atomsGroup)
         self.lineEdit_rho.setObjectName("lineEdit_rho")
         self.horizontalLayout_2.addWidget(self.lineEdit_rho)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout_2.addItem(spacerItem2)
         self.L_label = QtWidgets.QLabel(self.atomsGroup)
         self.L_label.setObjectName("L_label")
@@ -81,31 +96,51 @@ class Ui_MainWindow(object):
         self.formLayout.setObjectName("formLayout")
         self.statisticsLabel = QtWidgets.QLabel(self.stateGroup)
         self.statisticsLabel.setObjectName("statisticsLabel")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.statisticsLabel)
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.statisticsLabel
+        )
         self.comboBox_statistics = QtWidgets.QComboBox(self.stateGroup)
         self.comboBox_statistics.setObjectName("comboBox_statistics")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_statistics)
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.comboBox_statistics
+        )
         self.t0Label = QtWidgets.QLabel(self.stateGroup)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.t0Label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.t0Label.sizePolicy().hasHeightForWidth()
+        )
         self.t0Label.setSizePolicy(sizePolicy)
         self.t0Label.setScaledContents(False)
-        self.t0Label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.t0Label.setAlignment(
+            QtCore.Qt.AlignLeading
+            | QtCore.Qt.AlignLeft
+            | QtCore.Qt.AlignVCenter
+        )
         self.t0Label.setWordWrap(True)
         self.t0Label.setObjectName("t0Label")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.t0Label)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.t0Label
+        )
         self.lineEdit_t0 = QtWidgets.QLineEdit(self.stateGroup)
         self.lineEdit_t0.setFrame(True)
         self.lineEdit_t0.setObjectName("lineEdit_t0")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_t0)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_t0
+        )
         self.rcLabel = QtWidgets.QLabel(self.stateGroup)
         self.rcLabel.setObjectName("rcLabel")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.rcLabel)
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.rcLabel
+        )
         self.lineEdit_rc = QtWidgets.QLineEdit(self.stateGroup)
         self.lineEdit_rc.setObjectName("lineEdit_rc")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_rc)
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_rc
+        )
         self.gridLayout_2.addLayout(self.formLayout, 0, 0, 2, 1)
         self.tBathGroup = QtWidgets.QGroupBox(self.stateGroup)
         self.tBathGroup.setObjectName("tBathGroup")
@@ -114,17 +149,25 @@ class Ui_MainWindow(object):
         self.tBathLabel = QtWidgets.QLabel(self.tBathGroup)
         self.tBathLabel.setWordWrap(True)
         self.tBathLabel.setObjectName("tBathLabel")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.tBathLabel)
+        self.formLayout_2.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.tBathLabel
+        )
         self.lineEdit_tBath = QtWidgets.QLineEdit(self.tBathGroup)
         self.lineEdit_tBath.setFrame(True)
         self.lineEdit_tBath.setObjectName("lineEdit_tBath")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tBath)
+        self.formLayout_2.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.lineEdit_tBath
+        )
         self.nuLabel = QtWidgets.QLabel(self.tBathGroup)
         self.nuLabel.setObjectName("nuLabel")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.nuLabel)
+        self.formLayout_2.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.nuLabel
+        )
         self.lineEdit_nu = QtWidgets.QLineEdit(self.tBathGroup)
         self.lineEdit_nu.setObjectName("lineEdit_nu")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_nu)
+        self.formLayout_2.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_nu
+        )
         self.gridLayout_2.addWidget(self.tBathGroup, 0, 1, 1, 1)
         self.verticalLayout_2.addWidget(self.stateGroup)
         self.simulationBox = QtWidgets.QGroupBox(self.centralwidget)
@@ -146,7 +189,12 @@ class Ui_MainWindow(object):
         self.lineEdit_dt = QtWidgets.QLineEdit(self.simulationBox)
         self.lineEdit_dt.setObjectName("lineEdit_dt")
         self.horizontalLayout_5.addWidget(self.lineEdit_dt)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout_5.addItem(spacerItem3)
         self.outputLabel = QtWidgets.QLabel(self.simulationBox)
         self.outputLabel.setObjectName("outputLabel")
@@ -166,7 +214,12 @@ class Ui_MainWindow(object):
         self.lineEdit_fSamp.setFrame(True)
         self.lineEdit_fSamp.setObjectName("lineEdit_fSamp")
         self.horizontalLayout_6.addWidget(self.lineEdit_fSamp)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout_6.addItem(spacerItem4)
         self.checkBox_unfold = QtWidgets.QCheckBox(self.simulationBox)
         self.checkBox_unfold.setObjectName("checkBox_unfold")
@@ -182,13 +235,24 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setObjectName("label")
         self.horizontalLayout_7.addWidget(self.label)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
         self.horizontalLayout_7.addItem(spacerItem5)
-        self.pushButton_start = QtWidgets.QCommandLinkButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        self.pushButton_start = QtWidgets.QCommandLinkButton(
+            self.centralwidget
+        )
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_start.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_start.sizePolicy().hasHeightForWidth()
+        )
         self.pushButton_start.setSizePolicy(sizePolicy)
         self.pushButton_start.setObjectName("pushButton_start")
         self.horizontalLayout_7.addWidget(self.pushButton_start)
@@ -216,24 +280,28 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "PYMD"))
         self.atomsGroup.setTitle(_translate("MainWindow", "Atoms"))
         self.elementLabel.setText(_translate("MainWindow", "Element"))
-        self.checkBox_fromFile.setText(_translate("MainWindow", "Load from .xyz file"))
+        self.checkBox_fromFile.setText(
+            _translate("MainWindow", "Load from .xyz file")
+        )
         self.lineEdit_fileName.setText(_translate("MainWindow", ".xyz file"))
         self.pushButton_browseFile.setText(_translate("MainWindow", "Browse"))
-        self.numberLabel.setText(_translate("MainWindow", "Number\n"
-"of atoms"))
+        self.numberLabel.setText(
+            _translate("MainWindow", "Number\n" "of atoms")
+        )
         self.lineEdit_number.setText(_translate("MainWindow", "216"))
         self.rhoLabel.setText(_translate("MainWindow", "Density"))
         self.lineEdit_rho.setText(_translate("MainWindow", "0.84"))
-        self.L_label.setText(_translate("MainWindow", "Length\n"
-"of box"))
+        self.L_label.setText(_translate("MainWindow", "Length\n" "of box"))
         self.stateGroup.setTitle(_translate("MainWindow", "State"))
-        self.checkBox_eCorr.setText(_translate("MainWindow", "Use energy corrections"))
+        self.checkBox_eCorr.setText(
+            _translate("MainWindow", "Use energy corrections")
+        )
         self.statisticsLabel.setText(_translate("MainWindow", "Statistics"))
-        self.t0Label.setText(_translate("MainWindow", "Initial\n"
-"temperature"))
+        self.t0Label.setText(
+            _translate("MainWindow", "Initial\n" "temperature")
+        )
         self.lineEdit_t0.setText(_translate("MainWindow", "2"))
-        self.rcLabel.setText(_translate("MainWindow", "Cutoff\n"
-"radius"))
+        self.rcLabel.setText(_translate("MainWindow", "Cutoff\n" "radius"))
         self.lineEdit_rc.setText(_translate("MainWindow", "3.5"))
         self.tBathGroup.setTitle(_translate("MainWindow", "Thermal bath"))
         self.tBathLabel.setText(_translate("MainWindow", "Temperature"))
@@ -244,12 +312,22 @@ class Ui_MainWindow(object):
         self.dt_Label.setText(_translate("MainWindow", "Time step"))
         self.lineEdit_dt.setText(_translate("MainWindow", "0.001"))
         self.outputLabel.setText(_translate("MainWindow", "Output name"))
-        self.fSampLabel.setText(_translate("MainWindow", "Sample\n"
-"frequency"))
+        self.fSampLabel.setText(
+            _translate("MainWindow", "Sample\n" "frequency")
+        )
         self.lineEdit_fSamp.setText(_translate("MainWindow", "1000"))
-        self.checkBox_unfold.setText(_translate("MainWindow", "Unfold coordinates"))
-        self.checkBox_singleFile.setText(_translate("MainWindow", "Single .xyz output"))
-        self.label.setText(_translate("MainWindow", "The program will output one or more .xyz file and a .txt with step data"))
+        self.checkBox_unfold.setText(
+            _translate("MainWindow", "Unfold coordinates")
+        )
+        self.checkBox_singleFile.setText(
+            _translate("MainWindow", "Single .xyz output")
+        )
+        self.label.setText(
+            _translate(
+                "MainWindow",
+                "The program will output one or more .xyz file and a .txt with step data",
+            )
+        )
         self.pushButton_start.setText(_translate("MainWindow", "Start"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionLoad.setText(_translate("MainWindow", "Load..."))
