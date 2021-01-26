@@ -1,14 +1,17 @@
-from typing import TextIO
+from typing import TextIO, Tuple
 
 import numpy as np
 
 
-def xyz_in(file: TextIO) -> (int, np.ndarray, np.ndarray):
+def xyz_in(file: TextIO) -> Tuple[int, np.ndarray, np.ndarray]:
     """
     Read and parse .xyz file to array of position and velocity vectors.
 
-    :param TextIO file: file stream
-    :return (int, np.ndarray, np.ndarray): N of atoms, r, v arrays
+    Args:
+        file (TextIO): file stream
+
+    Returns:
+        Tuple[int, np.ndarray, np.ndarray]: N of atoms, r, v arrays
     """
     # Read first row for N and has_vel
     N, has_vel = [int(i) for i in next(file).split()]
@@ -42,15 +45,17 @@ def xyz_out(
     """
     Outputs array of position and velocity vectors to file in .xyz format
 
-    :param TextIO file: file stream
-    :param np.ndarray r: array of position vectors
-    :param np.ndarray v: array of velocity vectors
-    :param np.ndarray i: array of periodic boundary crossing vectors
-    :param double L: box dimension
-    :param double z: atomic number of specie
-    :param bool put_vel: choice if put velocities in .xyz file
-    :param bool unfold: choice to unfold the coordinates, the unfolded
-                        coordinate is r[i]+i[i]*L
+    Args:
+        datafile (TextIO): file stream
+        r (np.ndarray): array of position vectors
+        v (np.ndarray): array of velocity vectors
+        i (np.ndarray): array of periodic boundary crossing vectors
+        L (float): box dimension
+        elem (str, optional): atomic specie. Defaults to "Ar".
+        put_vel (bool, optional): choice if put velocities in .xyz file.
+                                  Defaults to True.
+        unfold (bool, optional): choice to unfold the coordinates, the unfolded
+                                 coordinate is r[i]+i[i]*L. Defaults to False.
     """
     # Get N of particles
     N = r.shape[0]
@@ -74,8 +79,11 @@ def gen_cubic_grid(N: int) -> np.ndarray:
     Generate the smallest cubic grid housing N particles,
     unitary length of the cube
 
-    :param int N: number of points
-    :returns np.ndarray: cubic grid
+    Args:
+        N (int): number of points
+
+    Returns:
+        np.ndarray: cubic grid
     """
     # Find the lowest perfect cube, n3, greater than or equal to the
     # number of particles

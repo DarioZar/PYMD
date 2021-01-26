@@ -1,10 +1,32 @@
 import json
 import os
 from math import sqrt
+from typing import List
 
 
 class Element:
+    """
+    Element object, with information about normal units.
+
+    Attributes:
+        name (str): name of element
+        mass (float): mass of element
+        sigma (float): sigma, in Lennard-Jones potential
+        eps (float): epsilon, in Lennard-Jones potential
+        units (Dict[str,float]): normal units for element
+    """
+
     def __init__(self, name: str, mass: float, sigma: float, eps: float):
+        """
+        Initialize element.
+
+        Args:
+            name (str): name of element
+            mass (float): mass of element
+            sigma (float): sigma, in Lennard-Jones potential
+            eps (float): epsilon, in Lennard-Jones potential
+        """
+        # Boltzmann constant
         k = 1.380649e-23
         self.name = name
         self.mass = mass * 1.661e-27
@@ -28,6 +50,18 @@ class Element:
 
 
 def gen_element(name: str) -> Element:
+    """
+    Generate element, retrieving data from the species JSON file.
+
+    Args:
+        name (str): element chemical symbol
+
+    Raises:
+        Exception: if name is not defined in the species.json file
+
+    Returns:
+        Element: element object
+    """
     if name not in available_elements():
         raise Exception("Element not defined in species.json")
     path = os.path.dirname(os.path.realpath(__file__))
@@ -39,7 +73,13 @@ def gen_element(name: str) -> Element:
     return elem
 
 
-def available_elements() -> list[str]:
+def available_elements() -> List[str]:
+    """
+    List of elements defined in the species.json file
+
+    Returns:
+        List[str]: list of elements defined in the species.json file
+    """
     path = os.path.dirname(os.path.realpath(__file__))
     filename = os.path.join(path, "data", "species.json")
     with open(filename, "r") as f:

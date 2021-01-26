@@ -4,3 +4,20 @@ build-backend = "setuptools.build_meta"
 parallel   = false
 purepython = false
 gui        = true
+
+[tool.black]
+line-length = 79
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.git
+    | \.mypy_cache
+    | \venv
+    | build
+    | dist
+  )/
+)
+'''

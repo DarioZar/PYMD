@@ -9,11 +9,12 @@ def force(double[:,:] r, double L, double rc, double ecor, double ecut):
     """
     N^2 algorithm for computing forces, potential energy and virial.
 
-    :param double[N,3] r: array of vector positions
-    :param double L: dimension of box
-    :param double rc: cutoff distance
-    :param double ecor: energy correction
-    :param double ecut: energy after cutoff
+    Args:
+        r (double[N,3]): array of vector positions
+        L (double): dimension of box
+        rc (double): cutoff distance
+        ecor (double): energy correction
+        ecut (double): energy after cutoff
     """
     cdef:
         size_t i,j
@@ -22,7 +23,7 @@ def force(double[:,:] r, double L, double rc, double ecor, double ecut):
         double r3,r6i,modf,dx,dy,dz,r2
         double e=0,vir=0
         np.ndarray[double,ndim=2] f = np.zeros((N,3), dtype=np.float64)
-    
+
     # Pair interaction loop
     for i in range(0,N-1):
         for j in range(i+1,N):

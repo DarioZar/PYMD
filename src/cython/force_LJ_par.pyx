@@ -1,11 +1,25 @@
 cimport cython
-from cython.parallel import prange, parallel
+
+from cython.parallel import parallel, prange
+
 cimport openmp
+
 import numpy as np
+
 cimport numpy as np
 
 
-cdef float bc(float dx, float bound) nogil:
+cdef double bc(double dx, double bound) nogil:
+    """
+    Applies periodic boundary condition.
+
+    Args:
+        dx (double): val to apply the boundary
+        bound (double): boundary
+
+    Returns:
+        double: val after applying the boundary condition
+    """
     if dx>bound/2:
         dx-=bound
     elif dx<-bound/2:
@@ -15,15 +29,16 @@ cdef float bc(float dx, float bound) nogil:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def force(np.float_t[:,:] r, double L, double rc, double ecor, double ecut):
+def force(double[:,:] r, double L, double rc, double ecor, double ecut):
     """
     N^2 algorithm for computing forces, potential energy and virial.
 
-    :param double[N,3] r: array of vector positions
-    :param double L: dimension of box
-    :param double rc: cutoff distance
-    :param double ecor: energy correction
-    :param double ecut: energy after cutoff
+    Args:
+        r (double[N,3]): array of vector positions
+        L (double): dimension of box
+        rc (double): cutoff distance
+        ecor (double): energy correction
+        ecut (double): energy after cutoff
     """
     cdef:
         int i,j
@@ -31,7 +46,7 @@ def force(np.float_t[:,:] r, double L, double rc, double ecor, double ecut):
         double rc2 = rc*rc
         double r3,r6i, modf,dx,dy,dz,r2
         double e=0,vir=0
-        np.ndarray[np.float_t,ndim=2] f = np.zeros((N,3), dtype=np.float)
+        np.ndarray[double,ndim=2] f = np.zeros((N,3), dtype=np.float64)
     
     # Pair interaction loop, parallelized over i using parallel range
     # attenzione ad aggiornare valori dentro prange!
@@ -40,11 +55,11 @@ def force(np.float_t[:,:] r, double L, double rc, double ecor, double ecut):
     cdef:
         int tid
         int N_padded = (((N-1)//8)+1)*8
-        double[:] fx_local = np.zeros(N_padded*num_threads, dtype=np.float64)
-        double[:] fy_local = np.zeros(N_padded*num_threads, dtype=np.float64)
-        double[:] fz_local = np.zeros(N_padded*num_threads, dtype=np.float64)
-        double[:] e_local  = np.zeros(num_threads, dtype=np.float64)
-        double[:] vir_local= np.zeros(num_threads, dtype=np.float64)
+        double[:] fx_local  = np.zeros(N_padded*num_threads, dtype=np.float64)
+        double[:] fy_local  = np.zeros(N_padded*num_threads, dtype=np.float64)
+        double[:] fz_local  = np.zeros(N_padded*num_threads, dtype=np.float64)
+        double[:] e_local   = np.zeros(num_threads, dtype=np.float64)
+        double[:] vir_local = np.zeros(num_threads, dtype=np.float64)
     
     with nogil, parallel(num_threads=num_threads):
         for i in prange(0, N-1, schedule="static", chunksize=50):
@@ -58,7 +73,7 @@ def force(np.float_t[:,:] r, double L, double rc, double ecor, double ecut):
                 dx=bc(dx,L)
                 dy=bc(dy,L)
                 dz=bc(dz,L)
-                
+
                 r2 = dx*dx + dy*dy + dz*dz
                 # Consider interaction only if r^2<r_{cutoff}^2 
                 if r2<rc2:
