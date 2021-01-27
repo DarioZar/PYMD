@@ -1,7 +1,9 @@
+from typing import List
 import numpy as np
 
 from pymd.element import Element, gen_element
 from pymd.util import gen_cubic_grid, xyz_in, xyz_out
+from pymd.pair_corr import calc_hist
 
 
 # TODO Element to Array of Element, then pass parameters to forcepoly
@@ -49,11 +51,11 @@ class Atoms:
         self.rho = rho
         self.L = np.cbrt(self.N / self.rho)
         self.elem = elem
-        if not r:
+        if r is None:
             self.set_r_cubicgrid()
         else:
             self.r = r
-        if not v:
+        if v is None:
             self.set_v_random()
         else:
             self.v = v
@@ -113,9 +115,6 @@ class Atoms:
                 unfold=unfold,
             )
 
-    def gr(self) -> np.ndarray:
-        pass
-
 
 def fromfile(rho: float, init_cfg_file: str, **kwargs) -> Atoms:
     """
@@ -136,3 +135,37 @@ def fromfile(rho: float, init_cfg_file: str, **kwargs) -> Atoms:
     with open(init_cfg_file, "r") as f:
         N, r, v = xyz_in(f)
     return Atoms(N, rho, elem, r, v, **kwargs)
+
+
+def pair_correlation(
+    atomslist: List[Atoms], rc: float, dr: float
+) -> np.ndarray:
+    """
+    Calculate pair correlation function from a list of Atoms
+    objects.
+
+    Args:
+        atomslist (List[Atoms]): list of atoms objects to use as sample
+        rc (float): cutoff radius for pair interaction
+        dr (float): size of bin
+
+    Returns:
+        np.ndarray: pair correlation function as (r, g(r)) array
+    """
+    # Calc number of bins and create histogram
+    nbins = int(rc/dr) + 1
+    g = np.zeros(nbins, dtype=np.int)
+    # Update histogram using a cython method
+    for atoms in atomslist:
+        g += calc_hist(atoms.r, atoms.L, rc, dr)
+    # Normalize the histogram
+    ngr = len(atomslist)
+    N = atomslist[0].N
+    rho = atomslist[0].rho
+    bins = np.arange(nbins)
+    vb = ((bins+1)**3 - bins**3)*(dr**3)
+    g /= (4/3)*np.pi*vb*rho*N*ngr
+    # Calc positions of bins
+    r = dr*(bins + 0.5)
+    # Return array (r,g(r))
+    return np.array([r, g])

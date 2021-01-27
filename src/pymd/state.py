@@ -104,11 +104,13 @@ class NVEState:
         fSamp: int,
         unfold: bool = False,
         append: bool = True,
-        filename: str = "",
-    ) -> np.ndarray:
+        filename: str = None,
+    ) -> Tuple[np.ndarray, List[Atoms]]:
         """
         Simulate for a given number of timesteps, saving the position
-        and velocities to a .xyz file at desired frequency.
+        and velocities as Atoms objects in a List. If a filename is given,
+        a .xyz file is generated, with frequency fSamp, with positions
+        and velocities.
 
         Args:
             s (int): number of timesteps
@@ -122,27 +124,38 @@ class NVEState:
             append (bool, optional): if True, save a single .xyz file.
                 Defaults to True.
             filename (str, optional): filename of .xyz file, without the
-                extension. Defaults to "".
+                extension.
 
         Returns:
             np.ndarray: output array with all the state variables, as
                 [time, KE, PE, TE, drift, T, P]
+            List[Atoms]: snapshots of the atoms, sample frequency fSamp
         """
+        # Creates array of timesteps
         dt = np.array(dt)
         if dt.shape != s:
             dt = np.ones(s) * dt.item(0)
+        # Creates output array and output list
         output = np.empty((s, len(self.vars_output())))
         output[0] = self.vars_output()
-        self.atoms.write_xyz(filename + "_0.xyz")
+        atomsOutput = [self.atoms]
+        # If a filename is given, writes .xyz output
+        if filename is not None:
+            self.atoms.write_xyz(filename + "_0.xyz")
+        # Simulation loop
         for i in range(1, s):
+            # Step
             self.step(dt[i])
+            # Save all variables
             output[i] = self.vars_output()
             if i % fSamp == 0:
-                if append:
-                    self.atoms.write_xyz(filename + "_0.xyz", append=True)
-                else:
-                    self.atoms.write_xyz(filename + f"_{i}.xyz")
-        return output
+                atomsOutput += [self.atoms]
+                if filename is not None:
+                    if append:
+                        self.atoms.write_xyz(filename + "_0.xyz", append=True)
+                    else:
+                        self.atoms.write_xyz(filename + f"_{i}.xyz")
+        return output, atomsOutput
 
     def corrections(
         self, rc: float, rho: float, use_e_corr: bool
@@ -230,6 +243,7 @@ class NVTAndersenState(NVEState):
         Tbath (float): thermostat temperature
         nu (float): thermostat frequency
     """
+
     def __init__(
         self,
         atoms: Atoms,
