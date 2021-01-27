@@ -47,7 +47,7 @@ def calc_hist(double[:,:] r, double L, double rc, double dr):
                 dz+=L
             modr = sqrt(dx*dx + dy*dy + dz*dz)
             # Consider interaction only if r<r_{cutoff}
-            if modr<rc
+            if modr<rc:
                 bin = <int>(modr/dr)
                 H[bin]+=2
     return H

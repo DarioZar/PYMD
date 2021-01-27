@@ -47,7 +47,7 @@ def force(double[:,:] r, double L, double rc, double ecor, double ecut):
         double r3,r6i, modf,dx,dy,dz,r2
         double e=0,vir=0
         np.ndarray[double,ndim=2] f = np.zeros((N,3), dtype=np.float64)
-    
+
     # Pair interaction loop, parallelized over i using parallel range
     # attenzione ad aggiornare valori dentro prange!
     # stackoverflow.com/questions/42281886/cython-make-prange-parallelization-thread-safe
@@ -60,7 +60,7 @@ def force(double[:,:] r, double L, double rc, double ecor, double ecut):
         double[:] fz_local  = np.zeros(N_padded*num_threads, dtype=np.float64)
         double[:] e_local   = np.zeros(num_threads, dtype=np.float64)
         double[:] vir_local = np.zeros(num_threads, dtype=np.float64)
-    
+
     with nogil, parallel(num_threads=num_threads):
         for i in prange(0, N-1, schedule="static", chunksize=50):
             tid = openmp.omp_get_thread_num()
