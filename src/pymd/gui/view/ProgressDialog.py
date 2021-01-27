@@ -1,54 +1,67 @@
 from PyQt5.QtMultimedia import QSound
 from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import QThread
 
 from pymd.gui import resources  # noqa: F401
 from pymd.gui.view.ui.Ui_ProgressDialog import Ui_ProgressDialog
 
 
-class ProgressDialog(Ui_ProgressDialog):
+class ProgressDialog(QDialog, Ui_ProgressDialog):
     @property
     def worker(self):
-        return self.myworker
+        return self._worker
 
     @worker.setter
     def worker(self, value):
-        self.myworker = value
-        self.myworker.progress.connect(self.reportProgressSlot)
-        self.myworker.currentoutput.connect(self.reportProgressString)
-        self.myworker.timeElapsed.connect(self.reportFinishTime)
-        self.myworker.finished.connect(self.enablePlotting)
-        self.myworker.finished.connect(self.playFinishSound)
+        self._worker = value
+        self.runWorker()
+        self._connectWorkerSignals()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, main_ctrl, parent=None):
+        super().__init__(parent)
+        self.main_ctrl = main_ctrl
         self.finishsound = QSound(":/sound/joy")
+        self.setupUi()
 
-    def setupUi(self, Dialog: QDialog):
+    def setupUi(self):
         # Initialize view
-        super().setupUi(Dialog)
+        super().setupUi(self)
         self.text.clear()
-        Dialog.rejected.connect(self.closeEvent)
+        self.rejected.connect(self.closeEvent)
         self.plotgr.clicked.connect(self.plotgrSlot)
 
-    def reportProgressSlot(self, value):
-        self.progressBar.setValue(100 * value)
-
-    def reportProgressString(self, value):
-        self.text.append(value)
-
-    def reportFinishTime(self, value):
-        self.text.append(f"Elapsed time: {value:0.3g} s")
-        self.progressBar.setValue(100)
-
-    def enablePlotting(self):
-        self.plotgr.setEnabled(True)
-
-    def playFinishSound(self):
-        self.finishsound.play()
-
     def plotgrSlot(self):
-        # window =
-        pass
+        self.main_ctrl.change_showPlot()
+        self.plotgr.setEnabled(False)
 
-    def closeEvent(self):
-        self.myworker.flag = True
+    def closeEvent(self, _):
+        self._worker.flag = True
+        self.parent().show()
+
+    def runWorker(self):
+        # Create a QThread object
+        thread = QThread(parent=self.parent())
+        # Move worker to the thread
+        self._worker.moveToThread(thread)
+        # Connect signals and slots
+        thread.started.connect(self._worker.run)
+        self._worker.finished.connect(thread.quit)
+        self._worker.finished.connect(self._worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+        # Start the thread
+        thread.start()
+
+    def _connectWorkerSignals(self):
+        self._worker.progress.connect(
+            lambda p: self.progressBar.setValue(100 * p)
+        )
+        self._worker.currentoutput.connect(lambda out: self.text.append(out))
+        self._worker.timeElapsed.connect(
+            lambda t: (
+                self.text.append(f"Elapsed time: {t:0.3g} s"),
+                self.progressBar.setValue(100),
+            )
+        )
+        self._worker.finished.connect(
+            lambda: (self.plotgr.setEnabled(True), self.finishsound.play())
+        )

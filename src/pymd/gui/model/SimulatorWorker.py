@@ -22,37 +22,49 @@ class SimulatorWorker(QObject):
 
     def run(self):
         a = time.time()
+        # Unpacks variables
         steps = self.values["steps"]
         dt = self.values["dt"]
         fSamp = self.values["fSamp"]
         append = self.values["append"]
         unfold = self.values["unfold"]
         filename = self.values["outputfile"]
+        # Positions, velocities output
+        atomsOutput = [self.state.atoms]
         self.state.atoms.write_xyz(filename + "_0.xyz", unfold=unfold)
+        # State variables output
         output = np.empty((steps, len(self.state.vars_output())))
         self.currentoutput.emit("Time\tKE\tPE\tTE\tdrift\tT\tP")
         output[0] = self.state.vars_output()
         self.currentoutput.emit(self.tostring(output[0]))
+        # Simulation loop
         for i in range(1, steps):
+            # Break condition if window is closed
             if self.flag:
                 break
+            # Time step
             self.state.step(dt)
+            # Save output
             output[i] = self.state.vars_output()
             if i % fSamp == 0:
                 self.currentoutput.emit(self.tostring(output[i]))
-                # self.g_r = state.g_r()
+                atomsOutput += [self.state.atoms]
                 if append:
                     self.state.atoms.write_xyz(
                         filename + "_0.xyz", append=True
                     )
                 else:
                     self.state.atoms.write_xyz(filename + f"_{i}.xyz")
+            # Show progress in bar
             self.progress.emit(i / steps)
+        # Emit signals and save output
         self.finished.emit()
         self.timeElapsed.emit(time.time() - a)
         np.savetxt(
             filename + ".txt", output, header="Time\tKE\tPE\tTE\tdrift\tT\tP"
         )
+        self.output = output
+        self.atomsOutput = atomsOutput
 
     def tostring(self, output):
         outstring = ""

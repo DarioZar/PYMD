@@ -1,12 +1,13 @@
 import time
 from typing import Tuple
 
-from PyQt5.QtCore import QStringListModel, QThread
+from PyQt5.QtCore import QStringListModel
 
 import pymd.atoms as mdatoms
 import pymd.element as mdelement
 import pymd.state as mdstate
 from pymd.gui.model.SimulatorWorker import SimulatorWorker
+from pymd.gui.model.PlotModel import PlotModel
 from pymd.util import xyz_in
 
 
@@ -29,6 +30,23 @@ class Model(object):
     def statistics_items(self, value):
         self.statistics_model.setStringList(value)
 
+    @property
+    def showPlot(self):
+        return self._showPlot
+
+    @showPlot.setter
+    def showPlot(self, value):
+        if value:
+            self.plotModel = PlotModel(
+                self.worker.output,
+                self.worker.atomsOutput,
+                self.worker.state.rc,
+            )
+            self._showPlot = True
+        else:
+            self.model.plotModel = None
+            self._showPlot = False
+
     def __init__(self):
         self._update_funcs = []
 
@@ -44,7 +62,7 @@ class Model(object):
         self.fileName = "Insert .xyz file"
         self.browseFile = False
         self.number = 216
-        self.rho = 0.84
+        self.rho = 0.4
         self.L = (self.number / self.rho) ** (1 / 3)
         self.statistics = 0
         self.t0 = 2
@@ -64,6 +82,9 @@ class Model(object):
         self.state = None
 
         self.worker = None
+
+        self._showPlot = False
+        self.plotModel = None
 
     def setSimulationData(self):
         element = mdelement.gen_element(self.element)
@@ -96,23 +117,7 @@ class Model(object):
             "outputfile": self.output,
         }
         self.worker = SimulatorWorker(self.state, values)
-        self.runSimulation(self.worker)
         self.announce_update()
-
-    def runSimulation(self, worker):
-        # Create a QThread object
-        self.thread = QThread()
-        # Create a worker object
-        self.worker = worker
-        # Move worker to the thread
-        self.worker.moveToThread(self.thread)
-        # Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        # Start the thread
-        self.thread.start()
 
     def isInputValid(self) -> Tuple[bool, str]:
         valid = False
@@ -150,6 +155,7 @@ class Model(object):
     def setFile(self, fileName: str):
         if self.isFileValid(fileName):
             self.fileName = fileName
+            self.L = (self.number / self.rho) ** (1 / 3)
         else:
             self.fileName = "File is not valid!"
             self.number = None

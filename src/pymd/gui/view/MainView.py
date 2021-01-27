@@ -6,6 +6,7 @@ from PyQt5.QtMultimedia import QSound
 
 from pymd.gui import resources  # noqa: F401
 from pymd.gui.view.ProgressDialog import ProgressDialog
+from pymd.gui.view.PlotWindow import PlotWindow
 from pymd.gui.view.ui.Ui_MainWindow import Ui_MainWindow
 
 
@@ -15,10 +16,6 @@ class MainView(QtWidgets.QMainWindow):
         self.main_ctrl = main_ctrl
         super(MainView, self).__init__()
         self.build_ui()
-        # Attach progress dialog
-        self.dialog = QtWidgets.QDialog()
-        self.progressdialog = ProgressDialog()
-        self.progressdialog.setupUi(self.dialog)
         # Initial values
         self.update_ui_from_model()
         # register func with model for model update announcements
@@ -96,9 +93,10 @@ class MainView(QtWidgets.QMainWindow):
         self.singleFile = self.model.singleFile
         if self.model.start:
             self.model.start = False
-            self.progressdialog.worker = self.model.worker
-            self.dialog.show()
+            self.showProgressDialog(self.model.worker)
             self.hide()
+        if self.model.showPlot:
+            self.showPlot(self.model.plotModel)
 
     # widget signal event functions
     def on_element(self, index):
@@ -182,6 +180,15 @@ class MainView(QtWidgets.QMainWindow):
             options=options,
         )
         return fileName
+
+    def showProgressDialog(self, worker):
+        dialog = ProgressDialog(self.main_ctrl, parent=self)
+        dialog.worker = worker
+        dialog.show()
+
+    def showPlot(self, plotModel):
+        plotWindow = PlotWindow(plotModel, parent=self)
+        plotWindow.show()
 
     # properties for widget value
     @property

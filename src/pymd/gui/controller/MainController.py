@@ -76,6 +76,10 @@ class MainController(object):
             self.model.setFile(fileName)
         self.model.announce_update()
 
+    def change_showPlot(self):
+        self.model.showPlot = True
+        self.model.announce_update()
+
 
 def as_int(text: str) -> Optional[int]:
     try:
