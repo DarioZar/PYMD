@@ -44,13 +44,13 @@ def calc_hist(double[:,:] r, double L, double rc, double dr):
         int N = r.shape[0]
         int nbins = <int>(rc/dr) + 1
         double dx,dy,dz,modr
-        np.ndarray[int, ndim=1] H = np.zeros(nbins, dtype=np.int)
+        np.ndarray[np.int_t, ndim=1] H = np.zeros(nbins, dtype=np.int)
 
     # Now, thread safe by separation of memory
     cdef:
         int num_threads = openmp.omp_get_max_threads()
         int tid
-        int[:,:] H_local = np.zeros((num_threads,nbins), dtype=np.int)
+        np.int_t[:,:] H_local = np.zeros((num_threads,nbins), dtype=np.int)
 
 
     with nogil, parallel(num_threads=num_threads):

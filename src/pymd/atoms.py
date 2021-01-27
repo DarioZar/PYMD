@@ -153,19 +153,19 @@ def pair_correlation(
         np.ndarray: pair correlation function as (r, g(r)) array
     """
     # Calc number of bins and create histogram
-    nbins = int(rc/dr) + 1
-    g = np.zeros(nbins, dtype=np.int)
+    nbins = int(rc / dr) + 1
+    hist = np.zeros(nbins, dtype=np.int)
     # Update histogram using a cython method
     for atoms in atomslist:
-        g += calc_hist(atoms.r, atoms.L, rc, dr)
+        hist += calc_hist(atoms.r, atoms.L, rc, dr)
     # Normalize the histogram
     ngr = len(atomslist)
     N = atomslist[0].N
     rho = atomslist[0].rho
     bins = np.arange(nbins)
-    vb = ((bins+1)**3 - bins**3)*(dr**3)
-    g /= (4/3)*np.pi*vb*rho*N*ngr
+    vb = ((bins + 1) ** 3 - bins ** 3) * (dr ** 3)
+    g = hist / ((4 / 3) * np.pi * vb * rho * N * ngr)
     # Calc positions of bins
-    r = dr*(bins + 0.5)
+    r = dr * (bins + 0.5)
     # Return array (r,g(r))
     return np.array([r, g])
