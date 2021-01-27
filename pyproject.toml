@@ -2,7 +2,6 @@
 requires = ["setuptools>=40.8.0", "wheel", "cython", "numpy", "toml"]
 build-backend = "setuptools.build_meta"
 parallel   = false
-purepython = false
 gui        = true
 
 [tool.black]
