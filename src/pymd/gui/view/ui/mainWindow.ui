@@ -164,7 +164,7 @@ of box</string>
        <item row="1" column="1">
         <widget class="QCheckBox" name="checkBox_eCorr">
          <property name="text">
-          <string>Use energy corrections</string>
+          <string>Use long tail corrections</string>
          </property>
         </widget>
        </item>

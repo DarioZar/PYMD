@@ -294,7 +294,7 @@ class Ui_MainWindow(object):
         self.L_label.setText(_translate("MainWindow", "Length\n" "of box"))
         self.stateGroup.setTitle(_translate("MainWindow", "State"))
         self.checkBox_eCorr.setText(
-            _translate("MainWindow", "Use energy corrections")
+            _translate("MainWindow", "Use long tail corrections")
         )
         self.statisticsLabel.setText(_translate("MainWindow", "Statistics"))
         self.t0Label.setText(
