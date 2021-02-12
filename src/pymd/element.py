@@ -68,7 +68,7 @@ def gen_element(name: str) -> Element:
     filename = os.path.join(path, "data", "species.json")
     with open(filename, "r") as f:
         species = json.load(f)
-        elem = species["name" == name]
+        elem = [val for val in species if val["name"] == name][0]
     elem = Element(name, elem["mass"], elem["sigma"], elem["eps"])
     return elem
 
