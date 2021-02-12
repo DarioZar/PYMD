@@ -1,5 +1,7 @@
+from __future__ import annotations
 from typing import List
 import numpy as np
+from copy import deepcopy
 
 from pymd.element import Element, gen_element
 from pymd.util import gen_cubic_grid, xyz_in, xyz_out
@@ -115,6 +117,9 @@ class Atoms:
                 unfold=unfold,
             )
 
+    def copy(self) -> Atoms:
+        return deepcopy(self)
+
 
 def fromfile(rho: float, init_cfg_file: str, **kwargs) -> Atoms:
     """
@@ -128,13 +133,35 @@ def fromfile(rho: float, init_cfg_file: str, **kwargs) -> Atoms:
         Atoms: Atoms object
     """
     with open(init_cfg_file, "r") as f:
-        next(f)
-        next(f)
-        elemstr = next(f).split()[0]
-    elem = gen_element(elemstr)
-    with open(init_cfg_file, "r") as f:
-        N, r, v = xyz_in(f)
+        N, elems, r, v = xyz_in(f)
+    elem = gen_element(elems[0])
     return Atoms(N, rho, elem, r, v, **kwargs)
+
+
+def atomslist_fromfile(
+    rho: float, init_cfg_file: str, **kwargs
+) -> List[Atoms]:
+    """
+    Generates list of Atoms object from .xyz file.
+
+    Args:
+        rho (float): density of atoms
+        init_cfg_file (str): filename of .xyz file
+
+    Returns:
+        List[Atoms]: List of Atoms objects
+    """
+    atomslist = []
+    with open(init_cfg_file, "r") as f:
+        N = int(next(f).split()[0])
+        lines = sum(1 for line in f) + 1
+    steps = lines // (N + 2)
+    with open(init_cfg_file, "r") as f:
+        for s in range(steps):
+            N, elems, r, v = xyz_in(f)
+            elem = gen_element(elems[0])
+            atomslist.append(Atoms(N, rho, elem, r, v, **kwargs))
+    return atomslist
 
 
 def pair_correlation(

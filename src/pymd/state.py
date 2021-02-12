@@ -1,10 +1,11 @@
-# import json
+import json
 from typing import List, Tuple, Union
 
 import numpy as np
 
 from pymd.atoms import Atoms
 from pymd.force_LJ import force
+from pymd.element import gen_element
 
 
 # TODO: correct simulate for optional s
@@ -138,7 +139,7 @@ class NVEState:
         # Creates output array and output list
         output = np.empty((s, len(self.vars_output())))
         output[0] = self.vars_output()
-        atomsOutput = [self.atoms]
+        atomsOutput = [self.atoms.copy()]
         # If a filename is given, writes .xyz output
         if filename is not None:
             self.atoms.write_xyz(filename + "_0.xyz")
@@ -149,13 +150,13 @@ class NVEState:
             # Save all variables
             output[i] = self.vars_output()
             if i % fSamp == 0:
-                atomsOutput += [self.atoms]
+                atomsOutput += [self.atoms.copy()]
                 if filename is not None:
                     if append:
                         self.atoms.write_xyz(filename + "_0.xyz", append=True)
                     else:
                         self.atoms.write_xyz(filename + f"_{i}.xyz")
-        return output, atomsOutput
+        return output.T, atomsOutput
 
     def corrections(
         self, rc: float, rho: float, use_e_corr: bool
@@ -233,6 +234,18 @@ class NVEState:
             + vir / 3.0 / (self.atoms.N / self.atoms.rho)
         )
 
+    def to_JSON(self):
+        statedict = {
+            "statistics": "NVE",
+            "elem": self.atoms.elem.name,
+            "N": self.atoms.N,
+            "rho": self.atoms.rho,
+            "L": self.atoms.L,
+            "T": self.T,
+            "rc": self.rc,
+        }
+        return json.dumps(statedict)
+
 
 class NVTAndersenState(NVEState):
     """
@@ -296,10 +309,37 @@ class NVTAndersenState(NVEState):
         self.atoms.v += 0.5 * dt * self.f
         self.calc_vars(vir)
 
+    def to_JSON(self):
+        statedict = {
+            "statistics": "NVT(Andersen)",
+            "elem": self.atoms.elem.name,
+            "N": self.atoms.N,
+            "rho": self.atoms.rho,
+            "L": self.atoms.L,
+            "T": self.T,
+            "rc": self.rc,
+            "Tbath": self.Tbath,
+            "nu": self.nu,
+        }
+        return json.dumps(statedict)
 
-# TODO: input json to get a State object.
+
+# TODO: TEST input json to get a State object.
 def state_from_JSON(file):
-    pass
+    statedict = json.load(file)
+    elem = gen_element(statedict["elem"])
+    atoms = Atoms(N=statedict["N"], rho=statedict["rho"], elem=elem)
+    if statedict["statistics"] == "NVE":
+        state = NVEState(atoms=atoms, T0=statedict["T"], rc=statedict["rc"])
+    elif statedict["statistics"] == "NVT(Andersen)":
+        state = NVTAndersenState(
+            atoms=atoms,
+            T0=statedict["T"],
+            rc=statedict["rc"],
+            Tbath=statedict["TBath"],
+            nu=statedict["nu"],
+        )
+    return state
 
 
 def available_statistics() -> List[str]:

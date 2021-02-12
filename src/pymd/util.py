@@ -3,7 +3,7 @@ from typing import TextIO, Tuple
 import numpy as np
 
 
-def xyz_in(file: TextIO) -> Tuple[int, np.ndarray, np.ndarray]:
+def xyz_in(file: TextIO) -> Tuple[int, np.ndarray, np.ndarray, np.ndarray]:
     """
     Read and parse .xyz file to array of position and velocity vectors.
 
@@ -11,25 +11,47 @@ def xyz_in(file: TextIO) -> Tuple[int, np.ndarray, np.ndarray]:
         file (TextIO): file stream
 
     Returns:
-        Tuple[int, np.ndarray, np.ndarray]: N of atoms, r, v arrays
+        Tuple[int, np.ndarray, np.ndarray, np.ndarray]: N of atoms, r, v arrays
     """
     # Read first row for N and has_vel
     N, has_vel = [int(i) for i in next(file).split()]
     # If has velocities, read, else generate random
     if has_vel:
+        dtypeERV = {
+            "names": ("elemstr", "rx", "ry", "rz", "vx", "vy", "vz"),
+            "formats": (
+                "|U2",
+                np.float64,
+                np.float64,
+                np.float64,
+                np.float64,
+                np.float64,
+                np.float64,
+            ),
+        }
         data = np.loadtxt(
-            file, usecols=(1, 2, 3, 4, 5, 6), max_rows=N, dtype=np.float64
+            file,
+            usecols=(0, 1, 2, 3, 4, 5, 6),
+            max_rows=N,
+            dtype=dtypeERV,
+            unpack=True,
         )
-        r = data[:, :3]
-        v = data[:, 3:]
+        elems = data[0]
+        r = np.array(data[1:4]).T
+        v = np.array(data[4:]).T
     else:
+        dtypeER = {
+            "names": ("elemstr", "rx", "ry", "rz"),
+            "formats": ("|U2", np.float64, np.float64, np.float64),
+        }
         data = np.loadtxt(
-            file, usecols=(1, 2, 3), max_rows=N, dtype=np.float64
+            file, usecols=(0, 1, 2, 3), max_rows=N, dtype=dtypeER, unpack=True
         )
-        r = data
+        elems = data[0]
+        r = np.array(data[1:4]).T
         v = np.random.exponential(size=(N, 3), dtype=np.float64)
     # Return positions and velocities
-    return N, r, v
+    return N, elems, r, v
 
 
 def xyz_out(

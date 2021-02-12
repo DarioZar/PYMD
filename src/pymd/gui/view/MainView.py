@@ -6,7 +6,7 @@ from PyQt5.QtMultimedia import QSound
 
 from pymd.gui import resources  # noqa: F401
 from pymd.gui.view.ProgressDialog import ProgressDialog
-from pymd.gui.view.PlotWindow import PlotWindow
+from pymd.gui.view.PlotView import PlotView
 from pymd.gui.view.ui.Ui_MainWindow import Ui_MainWindow
 
 
@@ -34,6 +34,7 @@ class MainView(QtWidgets.QMainWindow):
         self._attachValidators()
 
     def _connectSignals(self):
+        self.ui.actionLoad.triggered.connect(self.on_action_load)
         self.ui.comboBox_element.currentTextChanged.connect(self.on_element)
         self.ui.checkBox_fromFile.stateChanged.connect(self.on_fromFile)
         self.ui.pushButton_browseFile.clicked.connect(self.on_browseFile)
@@ -99,6 +100,10 @@ class MainView(QtWidgets.QMainWindow):
             self.showPlot(self.model.plotModel)
 
     # widget signal event functions
+    def on_action_load(self):
+        filename = self.showFileDialog("json")
+        self.main_ctrl.loadFile(filename)
+
     def on_element(self, index):
         self.main_ctrl.change_element(index)
 
@@ -107,7 +112,7 @@ class MainView(QtWidgets.QMainWindow):
 
     def on_browseFile(self):
         self.main_ctrl.change_browseFile(
-            self.browseFile, self.showFileDialog()
+            self.browseFile, self.showFileDialog("xyz")
         )
 
     def on_number(self, text):
@@ -169,14 +174,14 @@ class MainView(QtWidgets.QMainWindow):
         errsound.play()
         error_dialog.exec_()
 
-    def showFileDialog(self) -> str:
+    def showFileDialog(self, strtype: str) -> str:
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
             None,
-            "Scegli file di coordinate *.xyz",
+            f"Scegli file {strtype}",
             "",
-            "XYZ Files (*.xyz);;All Files (*)",
+            f"{strtype} Files (*.{strtype});;All Files (*)",
             options=options,
         )
         return fileName
@@ -187,8 +192,8 @@ class MainView(QtWidgets.QMainWindow):
         dialog.show()
 
     def showPlot(self, plotModel):
-        plotWindow = PlotWindow(plotModel, parent=self)
-        plotWindow.show()
+        plotView = PlotView(plotModel, parent=self)
+        plotView.show()
 
     # properties for widget value
     @property

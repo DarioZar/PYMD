@@ -1,3 +1,4 @@
+import json
 import time
 from typing import Tuple
 
@@ -148,6 +149,29 @@ class Model(object):
             next(file)
             self.element = next(file).split()[0]
             file.close()
+            return True
+        except Exception:
+            return False
+
+    def loadFile(self, fileName: str):
+        if self.isJsonValid(fileName):
+            self.statistics = 0 if self.nu == 0 else 1
+        else:
+            self.error = "JSON not valid"
+
+    # TODO: Implement a JSON schema
+
+    def isJsonValid(self, fileName: str):
+        try:
+            file = open(fileName, "r")
+            stateDict = json.load(file)
+            self.element = stateDict["elem"]
+            self.number = stateDict["N"]
+            self.rho = stateDict["rho"]
+            self.t0 = stateDict["T"]
+            self.rc = stateDict["rc"]
+            self.tBath = stateDict["Tbath"]
+            self.nu = stateDict["nu"]
             return True
         except Exception:
             return False

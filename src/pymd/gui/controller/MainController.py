@@ -80,6 +80,10 @@ class MainController(object):
         self.model.showPlot = True
         self.model.announce_update()
 
+    def loadFile(self, filename):
+        self.model.loadFile(filename)
+        self.model.announce_update()
+
 
 def as_int(text: str) -> Optional[int]:
     try:

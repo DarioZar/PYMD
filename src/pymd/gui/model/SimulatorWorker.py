@@ -29,8 +29,11 @@ class SimulatorWorker(QObject):
         append = self.values["append"]
         unfold = self.values["unfold"]
         filename = self.values["outputfile"]
+        # JSON output
+        with open(filename+".json", "w") as f:
+            f.write(self.state.to_JSON())
         # Positions, velocities output
-        atomsOutput = [self.state.atoms]
+        atomsOutput = [self.state.atoms.copy()]
         self.state.atoms.write_xyz(filename + "_0.xyz", unfold=unfold)
         # State variables output
         output = np.empty((steps, len(self.state.vars_output())))
@@ -48,7 +51,7 @@ class SimulatorWorker(QObject):
             output[i] = self.state.vars_output()
             if i % fSamp == 0:
                 self.currentoutput.emit(self.tostring(output[i]))
-                atomsOutput += [self.state.atoms]
+                atomsOutput += [self.state.atoms.copy()]
                 if append:
                     self.state.atoms.write_xyz(
                         filename + "_0.xyz", append=True
@@ -58,13 +61,16 @@ class SimulatorWorker(QObject):
             # Show progress in bar
             self.progress.emit(i / steps)
         # Emit signals and save output
-        self.finished.emit()
         self.timeElapsed.emit(time.time() - a)
         np.savetxt(
-            filename + ".txt", output, header="Time\tKE\tPE\tTE\tdrift\tT\tP"
+            filename + ".txt",
+            output,
+            header="Time\tKE\tPE\tTE\tdrift\tT\tP",
+            comments="",
         )
-        self.output = output
+        self.output = output.T
         self.atomsOutput = atomsOutput
+        self.finished.emit()
 
     def tostring(self, output):
         outstring = ""
