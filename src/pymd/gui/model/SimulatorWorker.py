@@ -30,7 +30,7 @@ class SimulatorWorker(QObject):
         unfold = self.values["unfold"]
         filename = self.values["outputfile"]
         # JSON output
-        with open(filename+".json", "w") as f:
+        with open(filename + ".json", "w") as f:
             f.write(self.state.to_JSON())
         # Positions, velocities output
         atomsOutput = [self.state.atoms.copy()]

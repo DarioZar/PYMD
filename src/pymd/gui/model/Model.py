@@ -143,7 +143,7 @@ class Model(object):
     def isFileValid(self, fileName: str):
         try:
             file = open(fileName, "r")
-            self.number, _, _ = xyz_in(file)
+            self.number, _, _, _ = xyz_in(file)
             file.seek(0)
             next(file)
             next(file)
@@ -156,6 +156,7 @@ class Model(object):
     def loadFile(self, fileName: str):
         if self.isJsonValid(fileName):
             self.statistics = 0 if self.nu == 0 else 1
+            self.update_L()
         else:
             self.error = "JSON not valid"
 
@@ -175,6 +176,12 @@ class Model(object):
             return True
         except Exception:
             return False
+
+    def update_L(self):
+        if self.number and self.rho and self.rho != 0:
+            self.L = (self.number / self.rho) ** (1 / 3)
+        else:
+            self.L = None
 
     def setFile(self, fileName: str):
         if self.isFileValid(fileName):

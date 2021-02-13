@@ -22,10 +22,7 @@ class MainController(object):
         self.model.rho = as_float(text)
 
     def update_L(self):
-        if self.model.number and self.model.rho and self.model.rho != 0:
-            self.model.L = (self.model.number / self.model.rho) ** (1 / 3)
-        else:
-            self.model.L = None
+        self.model.update_L()
         self.model.announce_update()
 
     def change_statistics(self, index):
