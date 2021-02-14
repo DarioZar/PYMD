@@ -36,7 +36,7 @@ class SimulatorWorker(QObject):
         atomsOutput = [self.state.atoms.copy()]
         self.state.atoms.write_xyz(filename + "_0.xyz", unfold=unfold)
         # State variables output
-        output = np.empty((steps, len(self.state.vars_output())))
+        output = np.empty(steps, dtype=self.state.OUTDTYPE)
         self.currentoutput.emit("Time\tKE\tPE\tTE\tdrift\tT\tP")
         output[0] = self.state.vars_output()
         self.currentoutput.emit(self.tostring(output[0]))
@@ -68,7 +68,7 @@ class SimulatorWorker(QObject):
             header="Time\tKE\tPE\tTE\tdrift\tT\tP",
             comments="",
         )
-        self.output = output.T
+        self.output = output
         self.atomsOutput = atomsOutput
         self.finished.emit()
 

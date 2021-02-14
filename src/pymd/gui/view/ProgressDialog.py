@@ -1,6 +1,6 @@
+from PyQt5.QtCore import QThread
 from PyQt5.QtMultimedia import QSound
 from PyQt5.QtWidgets import QDialog
-from PyQt5.QtCore import QThread
 
 from pymd.gui import resources  # noqa: F401
 from pymd.gui.view.ui.Ui_ProgressDialog import Ui_ProgressDialog

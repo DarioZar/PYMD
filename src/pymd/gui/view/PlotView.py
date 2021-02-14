@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+
 from pymd.gui.controller.PlotController import PlotController
 from pymd.gui.view.ui.Ui_PlotWindow import Ui_PlotWindow
 
@@ -18,15 +19,21 @@ class PlotView(QtWidgets.QMainWindow, Ui_PlotWindow):
         self.tab1Plot = self.plotVars.axes.plot(
             self.model.current[0], self.model.current[1]
         )[0]
-        self.tab2Plot = self.plotG_r.axes.plot([0], [0], "bo-")[0]
+        self.tab2Plot = self.plotG_r.axes.plot(
+            self.model.gr[0], self.model.gr[1], "bo-"
+        )[0]
         self._setLimits()
         self._connectSignals()
         self.model.subscribe_update_func(self.update_ui_from_model)
 
     def _setLimits(self):
+        self.spinBox_start.setValue(self.model.grStart)
         self.spinBox_start.setRange(0, self.model.grStartMax)
+        self.spinBox_stop.setValue(self.model.grStop)
         self.spinBox_stop.setRange(1, self.model.grStopMax)
+        self.spinBox_step.setValue(self.model.grStep)
         self.spinBox_step.setRange(1, self.model.grStepMax)
+        self.doubleSpinBox_dr.setValue(self.model.dr)
         self.doubleSpinBox_dr.setRange(0, self.model.drMax)
         self.doubleSpinBox_dr.setDecimals(4)
 

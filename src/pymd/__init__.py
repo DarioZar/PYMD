@@ -1,5 +1,9 @@
-from pymd.gui.App import main
+from pymd.gui import Analyze, App
 
 
 def gui():
-    main()
+    App.main()
+
+
+def analyze_gui():
+    Analyze.main()

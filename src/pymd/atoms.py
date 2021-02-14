@@ -1,11 +1,14 @@
 from __future__ import annotations
-from typing import List
-import numpy as np
+
 from copy import deepcopy
+from typing import Any, List
+
+import numpy as np
+from nptyping import NDArray
 
 from pymd.element import Element, gen_element
-from pymd.util import gen_cubic_grid, xyz_in, xyz_out
 from pymd.pair_corr import calc_hist
+from pymd.util import gen_cubic_grid, xyz_in, xyz_out
 
 
 # TODO Element to Array of Element, then pass parameters to forcepoly
@@ -19,9 +22,9 @@ class Atoms:
         rho (float): density of atoms
         elem (Element): Element object of atoms
         L (float): box length
-        r (np.ndarray): positions array
-        v (np.ndarray): velocities array
-        i (np.ndarray): box crossing counter array
+        r (NDArray): positions array
+        v (NDArray): velocities array
+        i (NDArray): box crossing counter array
     """
 
     def __init__(
@@ -29,8 +32,8 @@ class Atoms:
         N: int,
         rho: float,
         elem: Element,
-        r: np.ndarray = None,
-        v: np.ndarray = None,
+        r: NDArray = None,
+        v: NDArray = None,
         removedrift: bool = True,
     ):
         """
@@ -44,8 +47,8 @@ class Atoms:
             N (int): number of atoms
             rho (float): density of atoms
             elem (Element): Element object of atoms
-            r (np.ndarray, optional): array of positions. Defaults to None.
-            v (np.ndarray, optional): array of velocities. Defaults to None.
+            r (NDArray, optional): array of positions. Defaults to None.
+            v (NDArray, optional): array of velocities. Defaults to None.
             removedrift (bool, optional): if True, puts to zero the velocity of
                 the center of mass. Defaults to True.
         """
@@ -166,7 +169,7 @@ def atomslist_fromfile(
 
 def pair_correlation(
     atomslist: List[Atoms], rc: float, dr: float
-) -> np.ndarray:
+) -> NDArray[(2, Any), float]:
     """
     Calculate pair correlation function from a list of Atoms
     objects.
@@ -177,11 +180,11 @@ def pair_correlation(
         dr (float): size of bin
 
     Returns:
-        np.ndarray: pair correlation function as (r, g(r)) array
+        NDArray[(2, Any), float]: pair correlation function as (r, g(r)) array
     """
     # Calc number of bins and create histogram
     nbins = int(rc / dr) + 1
-    hist = np.zeros(nbins, dtype=np.int)
+    hist = np.zeros(nbins, dtype=int)
     # Update histogram using a cython method
     for atoms in atomslist:
         hist += calc_hist(atoms.r, atoms.L, rc, dr)

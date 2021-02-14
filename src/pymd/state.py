@@ -2,10 +2,11 @@ import json
 from typing import List, Tuple, Union
 
 import numpy as np
+from nptyping import NDArray
 
 from pymd.atoms import Atoms
-from pymd.force_LJ import force
 from pymd.element import gen_element
+from pymd.force_LJ import force
 
 
 # TODO: correct simulate for optional s
@@ -21,8 +22,8 @@ class NVEState:
             velocities, box length, box crossing
         rc (float): Cutoff radius
         corr (Dict[str,float]): dictionary with energy at cutoff,
-            energy correction, potential correction
-        f (np.ndarray): array of forces on particles
+            energy correction, pressure correction
+        f (NDArray): array of forces on particles
         T (float): temperature
         PE (float): potential energy
         KE (float): kinetic energy
@@ -31,6 +32,18 @@ class NVEState:
         drift (float): energy drift from the start ((TE-TE0)/TE0)
         P (float): pressure
     """
+
+    OUTDTYPE = np.dtype(
+        [
+            ("time", np.float64),
+            ("KE", np.float64),
+            ("PE", np.float64),
+            ("TE", np.float64),
+            ("drift", np.float64),
+            ("T", np.float64),
+            ("P", np.float64),
+        ]
+    )
 
     def __init__(
         self,
@@ -101,12 +114,12 @@ class NVEState:
     def simulate(
         self,
         s: int,
-        dt: Union[np.ndarray, float],
+        dt: Union[NDArray, float],
         fSamp: int,
         unfold: bool = False,
         append: bool = True,
         filename: str = None,
-    ) -> Tuple[np.ndarray, List[Atoms]]:
+    ) -> Tuple[NDArray, List[Atoms]]:
         """
         Simulate for a given number of timesteps, saving the position
         and velocities as Atoms objects in a List. If a filename is given,
@@ -115,7 +128,7 @@ class NVEState:
 
         Args:
             s (int): number of timesteps
-            dt (Union[np.ndarray, float]): timestep or array of timesteps.
+            dt (Union[NDArray, float]): timestep or array of timesteps.
                 if the shape of the array is not (s,), defauolts timestep to
                 the first element of the array
             fSamp (int): sampling frequency of .xyz output
@@ -128,7 +141,7 @@ class NVEState:
                 extension.
 
         Returns:
-            np.ndarray: output array with all the state variables, as
+            NDArray: output array with all the state variables, as
                 [time, KE, PE, TE, drift, T, P]
             List[Atoms]: snapshots of the atoms, sample frequency fSamp
         """
@@ -137,7 +150,7 @@ class NVEState:
         if dt.shape != s:
             dt = np.ones(s) * dt.item(0)
         # Creates output array and output list
-        output = np.empty((s, len(self.vars_output())))
+        output = np.empty(s, dtype=self.OUTDTYPE)
         output[0] = self.vars_output()
         atomsOutput = [self.atoms.copy()]
         # If a filename is given, writes .xyz output
@@ -156,7 +169,7 @@ class NVEState:
                         self.atoms.write_xyz(filename + "_0.xyz", append=True)
                     else:
                         self.atoms.write_xyz(filename + f"_{i}.xyz")
-        return output.T, atomsOutput
+        return output, atomsOutput
 
     def corrections(
         self, rc: float, rho: float, use_e_corr: bool
@@ -187,13 +200,13 @@ class NVEState:
         ecut = 4 * (rr3 ** 4 - rr3 ** 2)
         return ecut, ecor, pcor
 
-    def calc_force_PE(self) -> Tuple[np.ndarray, float, float]:
+    def calc_force_PE(self) -> Tuple[NDArray, float, float]:
         """
         Computes force, potential energy and virial term using the
         imported extension.
 
         Returns:
-            Tuple[np.ndarray, float, float]: array of forces, potential
+            Tuple[NDArray, float, float]: array of forces, potential
                 energy, virial term
         """
         return force(
@@ -204,16 +217,27 @@ class NVEState:
             self.corr["ecut"],
         )
 
-    def vars_output(self) -> np.ndarray:
+    def vars_output(self) -> NDArray[OUTDTYPE]:
         """
         Outputs all the state variables.
 
         Returns:
-            np.ndarray: output array with all the state variables, as
-                [time, KE, PE, TE, drift, T, P]
+            NDArray: output array with all the state variables, as a
+                structured array [time, KE, PE, TE, drift, T, P]
         """
         return np.array(
-            [self.time, self.KE, self.PE, self.TE, self.drift, self.T, self.P]
+            [
+                (
+                    self.time,
+                    self.KE,
+                    self.PE,
+                    self.TE,
+                    self.drift,
+                    self.T,
+                    self.P,
+                )
+            ],
+            dtype=self.OUTDTYPE,
         )
 
     def calc_vars(self, vir: float):

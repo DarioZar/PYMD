@@ -2,12 +2,11 @@ from typing import Union
 
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QDoubleValidator, QIntValidator
-from PyQt5.QtMultimedia import QSound
 
-from pymd.gui import resources  # noqa: F401
-from pymd.gui.view.ProgressDialog import ProgressDialog
 from pymd.gui.view.PlotView import PlotView
+from pymd.gui.view.ProgressDialog import ProgressDialog
 from pymd.gui.view.ui.Ui_MainWindow import Ui_MainWindow
+from pymd.gui.view.util import showErrorDialog, showFileDialog
 
 
 class MainView(QtWidgets.QMainWindow):
@@ -101,7 +100,7 @@ class MainView(QtWidgets.QMainWindow):
 
     # widget signal event functions
     def on_action_load(self):
-        filename = self.showFileDialog("json")
+        filename = showFileDialog("json")
         self.main_ctrl.loadFile(filename)
 
     def on_element(self, index):
@@ -112,7 +111,7 @@ class MainView(QtWidgets.QMainWindow):
 
     def on_browseFile(self):
         self.main_ctrl.change_browseFile(
-            self.browseFile, self.showFileDialog("xyz")
+            self.browseFile, showFileDialog("xyz")
         )
 
     def on_number(self, text):
@@ -163,28 +162,8 @@ class MainView(QtWidgets.QMainWindow):
     def on_start(self):
         valid, error = self.model.isInputValid()
         if not valid:
-            self.showErrorDialog(error)
+            showErrorDialog(error)
         self.main_ctrl.change_start(valid)
-
-    def showErrorDialog(self, string: str):
-        error_dialog = QtWidgets.QErrorMessage()
-        error_dialog.showMessage(string)
-        error_dialog.setWindowTitle("Error!")
-        errsound = QSound(":/sound/error")
-        errsound.play()
-        error_dialog.exec_()
-
-    def showFileDialog(self, strtype: str) -> str:
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
-            None,
-            f"Scegli file {strtype}",
-            "",
-            f"{strtype} Files (*.{strtype});;All Files (*)",
-            options=options,
-        )
-        return fileName
 
     def showProgressDialog(self, worker):
         dialog = ProgressDialog(self.main_ctrl, parent=self)

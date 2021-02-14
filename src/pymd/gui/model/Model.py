@@ -7,8 +7,8 @@ from PyQt5.QtCore import QStringListModel
 import pymd.atoms as mdatoms
 import pymd.element as mdelement
 import pymd.state as mdstate
-from pymd.gui.model.SimulatorWorker import SimulatorWorker
 from pymd.gui.model.PlotModel import PlotModel
+from pymd.gui.model.SimulatorWorker import SimulatorWorker
 from pymd.util import xyz_in
 
 

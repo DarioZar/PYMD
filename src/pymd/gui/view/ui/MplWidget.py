@@ -1,12 +1,11 @@
-from PyQt5 import QtWidgets
 import matplotlib
+from PyQt5 import QtWidgets
 
 matplotlib.use("Qt5Agg")
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg  # noqa: E402
-from matplotlib.backends.backend_qt5agg import (  # noqa: E402
-    NavigationToolbar2QT as NavigationToolbar,
-)
+from matplotlib.backends.backend_qt5agg import \
+    NavigationToolbar2QT as NavigationToolbar  # noqa: E402
 from matplotlib.figure import Figure  # noqa: E402
 
 

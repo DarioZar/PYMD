@@ -1,11 +1,22 @@
-import numpy as np
 import json
+from typing import Callable, List
+
+import numpy as np
+from nptyping import NDArray
+
 import pymd.atoms as mdatoms
+from pymd.atoms import Atoms
+from pymd.state import NVEState
 
 
 class PlotModel(object):
-    def __init__(self, output, atomsOutput, rc):
-        self._update_funcs = []
+    def __init__(
+        self,
+        output: NDArray[NVEState.OUTDTYPE],
+        atomsOutput: List[Atoms],
+        rc: float,
+    ):
+        self._update_funcs: List[Callable] = []
 
         self.output = output
         self.atomsOutput = atomsOutput
@@ -21,9 +32,9 @@ class PlotModel(object):
         self.dr = 0.01
         self.drMax = rc
 
-        self._var = 1
+        self._var = "KE"
         self.units = 0
-        self.current = np.array([self.output[0], self.output[self.var]])
+        self.current = np.array([self.output["time"], self.output[self.var]])
         self.updatedVars = True
         self.updatedG_r = False
 
@@ -38,21 +49,22 @@ class PlotModel(object):
         self.updatedG_r = True
         self.announce_update()
 
-    def change_units(self, id):
+    def change_units(self, id: int):
         if id == 0:
-            self.current[0] = self.output[0]
+            self.current[0] = self.output["time"]
             self.current[1] = self.output[self.var]
             self.units = 0
         elif id == 1:
-            self.current[0] = self.output[0] * self.get_unit(0)
+            self.current[0] = self.output["time"] * self.get_unit("time")
             self.current[1] = self.output[self.var] * self.get_unit(self.var)
             self.units = 1
         else:
             pass
         self.updatedVars = True
 
-    def get_unit(self, var: int):
-        if var != 4:
+    def get_unit(self, var: str):
+        intvar = self.output.dtype.names.index(var)
+        if intvar != 4:
             units = self.atomsOutput[0].elem.units
             outputunits = [
                 "time",
@@ -63,15 +75,15 @@ class PlotModel(object):
                 "temp",
                 "pressure",
             ]
-            return units[outputunits[var]]
+            return units[outputunits[intvar]]
         else:
             return 1
 
-    def subscribe_update_func(self, func):
+    def subscribe_update_func(self, func: Callable):
         if func not in self._update_funcs:
             self._update_funcs.append(func)
 
-    def unsubscribe_update_func(self, func):
+    def unsubscribe_update_func(self, func: Callable):
         if func in self._update_funcs:
             self._update_funcs.remove(func)
 
@@ -84,19 +96,18 @@ class PlotModel(object):
         return self._var
 
     @var.setter
-    def var(self, value):
-        self._var = value
-        self.current[1] = self.output[value]
+    def var(self, value: int):
+        self._var = self.output.dtype.names[value]
+        self.current[1] = self.output[self._var]
         self.updatedVars = True
 
 
 def getValues(filename: str):
     with open(filename + ".json") as f:
         values = json.load(f)
-    output = np.loadtxt(filename + ".txt", skiprows=1, unpack=True)
+    output = np.loadtxt(filename + ".txt", dtype=NVEState.OUTDTYPE, skiprows=1)
     atomsOutput = mdatoms.atomslist_fromfile(
         values["rho"], filename + "_0.xyz"
     )
     rc = values["rc"]
-    print(output)
-    return [output, atomsOutput, rc]
+    return (output, atomsOutput, rc)
