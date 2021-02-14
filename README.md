@@ -32,3 +32,20 @@ state = NVTAndersenState(atoms=atoms, T0=1.2, Tbath=1.2, nu=5, rc=3)
 
 output, trajectory = state.simulate(s=10000, dt=0.001, fSamp=100)
 ```
+- To start the GUI, use
+    ```bash
+    pymd
+    ```
+    or
+    ```bash
+    python -m pymd
+    ```
+
+- To start the data analysis GUI, use
+    ```bash
+    pymdplot
+    ```
+    or
+    ```bash
+    python -m pymdplot
+    ```
